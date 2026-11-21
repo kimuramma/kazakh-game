@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Словарь</title>
+<style>
+@font-face{font-family:"Game";src:url(fonts/inter-Bold.otf) format("opentype");font-weight:700 800}
+@font-face{font-family:"Game";src:url(fonts/inter-ExtraBold.otf) format("opentype");font-weight:900}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#2a1a0e;font-family:"Game",Roboto,Arial,sans-serif;overflow:hidden}
+#wrap{height:100%;display:flex;align-items:center;justify-content:center}
+#page{position:relative;width:min(100vw,calc(100vh*1024/1536));aspect-ratio:1024/1536;container-type:inline-size;overflow:hidden;
+  background:url(img/map1.jpg) center/100% 100%}
+#page::before{content:"";position:absolute;inset:0;background:rgba(40,20,5,.35)}
+#card{position:absolute;left:5%;right:5%;top:4%;bottom:19%;background:linear-gradient(#fff6e2,#f3dfb6);border:1cqw solid #8a5a2e;border-radius:5cqw;
+  box-shadow:0 1.4cqw 0 #5a3417;padding:4.5cqw;overflow:auto}
+h1{margin:0 0 1cqw;font-size:6.6cqw;color:#3d220d}
+.sub{font-size:3.6cqw;font-weight:800;color:#8a5a2e;margin-bottom:3cqw}
+.grp{margin-top:3cqw;font-weight:900;color:#3d220d;font-size:4.2cqw;background:#f0d9a8;border-radius:2cqw;padding:1.4cqw 2.4cqw}
+.row{display:flex;justify-content:space-between;gap:3cqw;padding:2.4cqw 1.2cqw;border-bottom:0.4cqw dashed #d6b98a;font-size:4.4cqw;cursor:pointer}
+.row b{color:#2f6f18}
+.row span{color:#8a5a2e;font-weight:700;text-align:right}
+.empty{font-size:4.2cqw;font-weight:800;color:#8a5a2e;margin-top:6cqw;text-align:center;line-height:1.4}
+#toast{position:absolute;left:50%;bottom:20%;translate:-50% 0;z-index:60;background:rgba(40,20,5,.85);color:#fff;font-weight:800;font-size:3.6cqw;padding:2cqw 4cqw;border-radius:3cqw;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+#toast.on{opacity:1}
+</style>
+<script src="nav.js"></script>
+</head>
+<body>
+<div id="wrap"><div id="page">
+  <div id="card"><h1>📖 Мой словарь</h1><div class="sub" id="sub"></div><div id="list"></div></div>
+  <div id="toast"></div>
+</div></div>
+<script>
+const $=id=>document.getElementById(id);
+function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('on'); clearTimeout(e._t); e._t=setTimeout(()=>e.classList.remove('on'),1600); }
+window.toast=toast;
+let kk=null; try{ const f=()=>kk=speechSynthesis.getVoices().find(v=>/^kk/i.test(v.lang))||null; f(); speechSynthesis.onvoiceschanged=f; }catch(e){}
+function speak(t){ if(!kk) return; try{ const u=new SpeechSynthesisUtterance(t); u.voice=kk; u.lang=kk.lang; u.rate=.85; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+let d=[]; try{ d=JSON.parse(localStorage.getItem('almaDict')||'[]'); }catch(e){}
+if(!d.length){ $('sub').textContent=''; $('list').innerHTML='<div class="empty">Пока пусто 🙂<br>Пройди урок на карте — и новые слова появятся здесь!</div>'; }
+else{
+  $('sub').textContent='Всего слов: '+d.length;
+  const g={}; d.forEach(([k,r,l])=>{ l=l||'Урок 1. Магазин у дома'; (g[l]=g[l]||[]).push([k,r]); });
+  $('list').innerHTML=Object.entries(g).map(([l,ws])=>`<div class="grp">${l}</div>`+ws.map(([k,r])=>`<div class="row" data-k="${k}"><b>${k}</b><span>${r}</span></div>`).join('')).join('');
+  document.querySelectorAll('.row').forEach(r=>r.onclick=()=>speak(r.dataset.k));
+}
+mountNav($('page'),'dict','');
+</script>
+</body>
+</html>

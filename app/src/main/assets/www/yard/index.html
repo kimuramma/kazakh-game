@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Дом Алмы — рабочий прототип</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#2f6b2a;font-family:Nunito,system-ui,sans-serif;overflow:hidden}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#game{position:relative;width:min(100vw, calc(100dvh * 2 / 3));aspect-ratio:1024/1536;container-type:inline-size;overflow:hidden;
+  background:url(img/bg.jpg) center/100% 100% no-repeat;user-select:none}
+.abs{position:absolute}
+button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0}
+
+/* wood UI */
+.wood{background:linear-gradient(#c98a4b,#9c5f2c);border:0.6cqw solid #5a3417;border-radius:2.4cqw;
+  box-shadow:inset 0 0.5cqw 0 rgba(255,225,170,.45),inset 0 -0.6cqw 0 rgba(0,0,0,.18),0 0.8cqw 0 #4a2a10,0 1.4cqw 2cqw rgba(0,0,0,.25)}
+.woodtxt{color:#fff6e0;font-weight:900;text-shadow:0 0.35cqw 0 #4a2a10,0 0 0.6cqw rgba(0,0,0,.25)}
+#lessons{left:4%;top:2.6%;width:52%;aspect-ratio:1000/136;background:url(img/ui_plank.png) center/100% 100% no-repeat;display:flex;align-items:center;justify-content:center;padding-left:7cqw;font-size:4cqw;white-space:nowrap;color:#5a3010;font-weight:900;filter:drop-shadow(0 0.6cqw 0.6cqw rgba(0,0,0,.3))}
+#gear{right:4%;top:1.6%;width:13%;aspect-ratio:1;filter:drop-shadow(0 0.6cqw 0.6cqw rgba(0,0,0,.35));transition:transform .15s}
+#gear:active{transform:scale(.92) rotate(30deg)}
+#gear img{width:100%;height:100%;display:block}
+#menu{right:4%;top:10.6%;z-index:60;display:none;flex-direction:column;gap:1.6cqw;padding:2cqw}
+#menu.on{display:flex}
+#menu button{background:linear-gradient(#fff3d6,#f1d9a8);border:0.35cqw solid #b98a4a;border-radius:1.6cqw;color:#4a2a10;font-weight:900;font-size:3.4cqw;padding:1.6cqw 3cqw;text-align:left}
+
+#cats{left:11%;right:11%;top:9.6%;display:grid;grid-template-columns:repeat(3,1fr);gap:4cqw}
+.cat{position:relative;aspect-ratio:1;transition:transform .15s,filter .2s;filter:drop-shadow(0 0.8cqw 0.8cqw rgba(0,0,0,.35))}
+.cat img{width:100%;height:100%;display:block}
+.cat:active{transform:translateY(0.6cqw)}
+.cat .ic{height:55%;display:flex;align-items:center;justify-content:center}
+.cat .ic img{max-height:100%;max-width:90%;filter:drop-shadow(0 0.5cqw 0.4cqw rgba(0,0,0,.3))}
+.cat .lbl{position:absolute;left:5%;right:5%;bottom:6%;height:38%;background:linear-gradient(#fff3d6,#f1d9a8);border-radius:1.4cqw;border:0.35cqw solid #b98a4a;
+  display:flex;align-items:center;justify-content:center;text-align:center;color:#4a2a10;font-weight:900;font-size:3.3cqw;line-height:1.05}
+.cat.on{transform:scale(1.06);filter:drop-shadow(0 0 1.2cqw #ffe066) drop-shadow(0 0 2.4cqw #ffd54a) drop-shadow(0 0.8cqw 0.8cqw rgba(0,0,0,.35))}
+
+/* yard */
+.cell{border:0.4cqw dashed rgba(255,255,255,.75);border-radius:1.2cqw;transition:background .2s,border-color .2s}
+.cell.free.hl{background:rgba(255,255,255,.28);border-color:#fff;animation:glow 1s ease-in-out infinite}
+.gap{border-radius:0.6cqw}
+.gap.hl{background:rgba(255,255,255,.35);outline:0.3cqw dashed #fff;animation:glow 1s ease-in-out infinite}
+.gap.paved,.isect.paved{background:url(img/paving_tex.jpg) center/7cqw;box-shadow:inset 0 0 0.6cqw rgba(0,0,0,.35)}
+.item{pointer-events:none;transform-origin:50% 100%}
+.item.pop{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+#house{pointer-events:none;transform-origin:50% 100%;filter:drop-shadow(0 1cqw 1cqw rgba(0,0,0,.3))}
+#alma{pointer-events:auto;transform-origin:50% 100%;animation:bob 2.4s ease-in-out infinite}
+#alma.hop{animation:hop .6s ease}
+.bubble{max-width:42cqw;white-space:normal!important;text-align:center;background:#fff;border-radius:3cqw;padding:1.4cqw 2.6cqw;font-weight:900;font-size:3.4cqw;color:#4a2a10;box-shadow:0 1cqw 2cqw rgba(0,0,0,.2);
+  opacity:0;transform:scale(.6);transform-origin:bottom right;transition:all .25s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+.bubble.on{opacity:1;transform:none}
+.spark{position:absolute;width:2cqw;height:2cqw;border-radius:50%;background:#ffe36e;pointer-events:none;animation:spark .7s ease-out forwards}
+
+#banner{left:6%;right:6%;top:15.5%;display:none;align-items:center;justify-content:space-between;gap:2cqw;padding:1.6cqw 2.6cqw;font-size:3.6cqw;z-index:30}
+#banner.on{display:flex}
+#banner button{background:#fff3d6;color:#7a3f12;border-radius:2cqw;padding:1cqw 2.6cqw;font-weight:900;font-size:3.4cqw}
+#hot-back{left:3%;top:88%;width:46%}
+#hot-map{left:51%;top:88%;width:46%}
+.bbtn{filter:drop-shadow(0 0.8cqw 0.8cqw rgba(0,0,0,.35));transition:transform .15s}
+.bbtn:active{transform:translateY(0.6cqw) scale(.97)}
+.bbtn img{width:100%;display:block}
+
+/* build panel */
+#panel{left:0;right:0;bottom:0;height:47%;transform:translateY(105%);transition:transform .35s cubic-bezier(.3,1.2,.5,1);z-index:50;
+  background:linear-gradient(#c98a4b,#9c5f2c);border-top:0.8cqw solid #5a3417;border-radius:5cqw 5cqw 0 0;padding:2.4cqw 3cqw 3cqw;display:flex;flex-direction:column;gap:2cqw;
+  box-shadow:0 -1.5cqw 3cqw rgba(0,0,0,.3)}
+#panel.on{transform:none}
+#ptitle{display:flex;align-items:center;justify-content:space-between;font-size:5.4cqw}
+#pclose{width:10cqw;height:10cqw;border-radius:50%;background:#fff3d6;color:#7a3f12;font-weight:900;font-size:5cqw;box-shadow:0 0.6cqw 0 #4a2a10}
+#pgrid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2.4cqw;align-content:start;padding:0.6cqw 0.6cqw 2cqw;
+  background:linear-gradient(#fff3d6,#f1d9a8);border-radius:3cqw;border:0.4cqw solid #b98a4a;padding:2.4cqw}
+.card{position:relative;background:#fff;border-radius:2.6cqw;padding:1.4cqw 1.4cqw 1.8cqw;display:flex;flex-direction:column;align-items:center;gap:0.6cqw;
+  box-shadow:0 0.8cqw 0 #d9b98a;color:#4a2a10;font-weight:900;text-align:center}
+.card .pic{height:15cqw;width:100%;display:flex;align-items:center;justify-content:center}
+.card .pic img{max-height:100%;max-width:100%}
+.card .nm{font-size:3.2cqw;line-height:1.05}
+.card .ct{font-size:2.8cqw;color:#2f8f3a}
+.card.locked{background:#6b6b6b;box-shadow:0 0.8cqw 0 #444;color:#e8e8e8}
+.card.locked .pic img{filter:grayscale(1) brightness(.45)}
+.card.locked .ct{color:#ffd54a}
+.card.empty .ct{color:#a07040}
+.card.empty .pic img{opacity:.55}
+.card .lock{position:absolute;top:1.4cqw;right:1.4cqw;width:6cqw;height:6cqw}
+.card .act{margin-top:0.4cqw;background:linear-gradient(#3fe0c8,#13a596);box-shadow:0 0.6cqw 0 #0b7469;color:#fff;border-radius:1.8cqw;padding:1cqw 2.4cqw;font-size:3cqw;font-weight:900}
+.card .act.gold{background:linear-gradient(#ffcf5a,#f59a1c);box-shadow:0 0.6cqw 0 #c46200}
+
+#toast{white-space:pre-line;left:50%;top:40%;transform:translate(-50%,-50%) scale(.8);opacity:0;transition:all .25s;z-index:60;font-size:4cqw;padding:2.4cqw 4cqw;text-align:center;max-width:84%;pointer-events:none}
+#toast.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#rm{display:none;z-index:35;font-size:3.2cqw;padding:1cqw 2.4cqw}
+#rm.on{display:block}
+
+@keyframes glow{0%,100%{opacity:.75}50%{opacity:1}}
+@keyframes pop{0%{transform:scale(.2) translateY(-20%)}100%{transform:none}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2%)}}
+@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-14%) scale(1.04,.96)}}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+</style>
+<script src="../nav.js"></script>
+</head>
+<body>
+<div id="wrap"><div id="game">
+
+  <div id="layer" class="abs" style="inset:0"></div>
+
+  <div id="lessons" class="abs"><span>Уроки: <span id="lessonNum">1</span> / 200</span></div>
+  <button id="gear" class="abs" aria-label="Настройки"><img src="img/ui_gear.png" alt=""></button>
+  <div id="menu" class="abs wood">
+    <button id="demo">＋ Тест: пройти урок</button>
+    <button id="reset">↺ Начать заново</button>
+  </div>
+
+  <div id="cats" class="abs">
+    <button class="cat" data-cat="yard" aria-label="Общий двор"><img src="img/ui_yard.png" alt=""></button>
+    <button class="cat" data-cat="house" aria-label="Стройка дома"><img src="img/ui_build.png" alt=""></button>
+    <button class="cat" data-cat="inside" aria-label="Интерьер дома"><img src="img/ui_interior.png" alt=""></button>
+  </div>
+
+  <div id="banner" class="abs wood woodtxt"><span id="bannerTxt">Выбери клетку</span><button id="cancel">Отмена</button></div>
+  <button id="rm" class="abs wood woodtxt">Убрать</button>
+
+
+  <div id="panel" class="abs">
+    <div id="ptitle" class="woodtxt"><span id="ptitleTxt">Общий двор</span><button id="pclose" aria-label="Закрыть">✕</button></div>
+    <div id="pgrid"></div>
+  </div>
+
+  <div id="toast" class="abs wood woodtxt"></div>
+</div></div>
+
+<script>
+/* ---------- geometry (in the 1024 x 1536 picture) ---------- */
+const GW=1024, GH=1536;
+const X0=104, Y0=462, COLS=8, ROWS=7, PX=103.5, PY=86, CW=83, CH=66;
+const HOUSE_CELLS=[[0,3],[0,4],[1,3],[1,4],[2,3],[2,4]];
+const ALMA_CELL=[2,5];
+const pct=(v,t)=> (v/t*100)+'%';
+const $=id=>document.getElementById(id);
+const layer=$('layer');
+
+/* ---------- data ---------- */
+const ITEMS={
+  flowerbed:{n:'Клумба',u:1}, bush:{n:'Куст',u:1}, spruce:{n:'Ель',u:1}, paving:{n:'Брусчатка',u:1},
+  lamp:{n:'Фонарь',u:5}, bench:{n:'Скамейка',u:8}, garden_bed:{n:'Грядка',u:12}, well:{n:'Колодец',u:20},
+  swing:{n:'Качели',u:25}, fountain:{n:'Фонтан',u:30}, pond:{n:'Пруд',u:35}, tandyr:{n:'Тандыр',u:40}, gazebo:{n:'Беседка',u:50}
+};
+const HOUSES=[{id:'house_1_shalash',n:'Шалаш',u:1},{id:'house_2_wood',n:'Деревянный домик',u:10},{id:'house_3_brick',n:'Кирпичный дом',u:20}];
+const INSIDE=['Кровать','Стол','Ковёр','Лампа','Шкаф','Кресло'];
+const SIZE={spruce:1.05,gazebo:1.15,well:0.95,swing:1.05,tree:1,fountain:1,pond:1.15,garden_bed:1.15,flowerbed:1.05,bench:1.05,lamp:0.8,bush:0.85,tandyr:1.05};
+
+let S={lessons:1, inv:{flowerbed:2,bush:1,spruce:1,paving:6}, placed:{}, paved:{}, house:0};
+try{ const s=JSON.parse(localStorage.getItem('almaHome')||'null'); if(s) S=s; }catch(e){}
+const save=()=>{ try{ localStorage.setItem('almaHome',JSON.stringify(S)); }catch(e){} };
+
+/* ---------- sound ---------- */
+let ctx; const ac=()=>{ if(!ctx){ try{ ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return ctx; };
+function tone(f,t=.08,type='sine',v=.1,d=0,f2){const c=ac(); if(!c) return; const o=c.createOscillator(),g=c.createGain(),s=c.currentTime+d;
+  o.type=type;o.frequency.setValueAtTime(f,s); if(f2)o.frequency.exponentialRampToValueAtTime(f2,s+t);
+  g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(v,s+.01);g.gain.exponentialRampToValueAtTime(.0001,s+t);o.connect(g).connect(c.destination);o.start(s);o.stop(s+t+.02);}
+const sfx={tap(){tone(700,.05,'sine',.07)},pop(){tone(420,.12,'triangle',.12,0,900)},ok(){[660,880,1320].forEach((f,i)=>tone(f,.12,'triangle',.1,i*.08))},
+  build(){[200,260,200,300].forEach((f,i)=>tone(f,.09,'square',.05,i*.12)); [523,659,784,1047].forEach((f,i)=>tone(f,.15,'triangle',.1,.55+i*.09))}};
+
+/* ---------- helpers ---------- */
+const key=(r,c)=>r+'_'+c;
+const isHouse=(r,c)=>HOUSE_CELLS.some(([a,b])=>a===r&&b===c);
+const isAlma=(r,c)=>ALMA_CELL[0]===r&&ALMA_CELL[1]===c;
+function box(el,x,y,w,h){ el.style.left=pct(x,GW); el.style.top=pct(y,GH); if(w!=null) el.style.width=pct(w,GW); if(h!=null) el.style.height=pct(h,GH); }
+function toast(t,ms=1800){ const e=$('toast'); e.textContent=t; e.classList.add('on'); clearTimeout(e._h); e._h=setTimeout(()=>e.classList.remove('on'),ms); }
+function sparks(x,y){ for(let i=0;i<10;i++){ const s=document.createElement('div'); s.className='spark';
+  s.style.left=pct(x,GW); s.style.top=pct(y,GH); const a=Math.random()*6.28, r=6+Math.random()*8;
+  s.style.setProperty('--dx',Math.cos(a)*r+'cqw'); s.style.setProperty('--dy',Math.sin(a)*r-4+'cqw'); s.style.background=['#ffe36e','#fff','#ff9ad5','#9be7ff'][i%4];
+  layer.appendChild(s); setTimeout(()=>s.remove(),750);} }
+function almaSay(t){ const a=$('alma'); a.classList.remove('hop'); void a.offsetWidth; a.classList.add('hop');
+  const b=$('almaBubble'); b.textContent=t; b.classList.add('on'); clearTimeout(b._h); b._h=setTimeout(()=>b.classList.remove('on'),1600); }
+
+/* ---------- build the yard ---------- */
+const cells={}, gaps={};
+let mode=null; // {type:'item', id} | {type:'paving'}
+function cellXY(r,c){ return [X0+c*PX, Y0+r*PY]; }
+
+function drawYard(){
+  layer.innerHTML='';
+  // gaps (paving slots): vertical between columns, horizontal between rows, intersections
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS-1;c++){ const [x,y]=cellXY(r,c); addGap('v'+r+'_'+c, x+CW, y, PX-CW, CH); }
+  for(let r=0;r<ROWS-1;r++) for(let c=0;c<COLS;c++){ const [x,y]=cellXY(r,c); addGap('h'+r+'_'+c, x, y+CH, CW, PY-CH); }
+  for(let r=0;r<ROWS-1;r++) for(let c=0;c<COLS-1;c++){ const [x,y]=cellXY(r,c); const d=document.createElement('div'); d.className='abs isect'; d.dataset.k=r+'_'+c;
+    box(d,x+CW,y+CH,PX-CW,PY-CH); layer.appendChild(d); }
+  // cells
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    if(isHouse(r,c)||isAlma(r,c)) continue;
+    const [x,y]=cellXY(r,c); const d=document.createElement('button'); d.className='abs cell'; box(d,x,y,CW,CH);
+    d.onclick=()=>cellTap(r,c); layer.appendChild(d); cells[key(r,c)]=d;
+  }
+  // house
+  const hx=X0+3*PX - 10, hw=2*PX+20; const h=document.createElement('img'); h.id='house'; h.className='abs'; h.src='img/'+HOUSES[S.house].id+'.png'; h.alt=HOUSES[S.house].n;
+  h.style.left=pct(hx-20,GW); h.style.width=pct(hw+40,GW); h.style.bottom=pct(GH-(Y0+3*PY-12),GH); layer.appendChild(h);
+  // alma
+  const [ax,ay]=cellXY(ALMA_CELL[0],ALMA_CELL[1]); const a=document.createElement('img'); a.id='alma'; a.className='abs'; a.src='img/alma.png'; a.alt='Алма';
+  a.style.left=pct(ax+6,GW); a.style.width=pct(CW-10,GW); a.style.bottom=pct(GH-(ay+CH+4),GH); layer.appendChild(a);
+  a.onclick=()=>{ sfx.tap(); almaSay(['Привет! 👋','Давай строить!','Ура, наш двор!'][Math.floor(Math.random()*3)]); };
+  const b=document.createElement('div'); b.id='almaBubble'; b.className='abs bubble'; b.style.right=pct(GW-(ax+CW+10),GW); b.style.bottom=pct(GH-(ay-36),GH); b.style.zIndex=50; layer.appendChild(b);
+  renderAll();
+}
+function addGap(k,x,y,w,h){ const d=document.createElement('button'); d.className='abs gap'; d.dataset.k=k; box(d,x,y,w,h);
+  d.onclick=()=>gapTap(k); layer.appendChild(d); gaps[k]=d; }
+
+function renderAll(){
+  // placed items
+  layer.querySelectorAll('.item').forEach(e=>e.remove());
+  Object.entries(S.placed).forEach(([k,id])=>drawItem(k,id,false));
+  // paving
+  Object.entries(gaps).forEach(([k,d])=>d.classList.toggle('paved',!!S.paved[k]));
+  layer.querySelectorAll('.isect').forEach(d=>{ const [r,c]=d.dataset.k.split('_').map(Number);
+    const n=['v'+r+'_'+c,'v'+(r+1)+'_'+c,'h'+r+'_'+c,'h'+r+'_'+(c+1)].filter(k=>S.paved[k]).length; d.classList.toggle('paved',n>=2); });
+  Object.entries(cells).forEach(([k,d])=>d.classList.toggle('free',!S.placed[k]));
+  $('lessonNum').textContent=S.lessons;
+  const h=$('house'); if(h){ h.src='img/'+HOUSES[S.house].id+'.png'; }
+}
+function drawItem(k,id,anim){
+  const [r,c]=k.split('_').map(Number); const [x,y]=cellXY(r,c); const s=SIZE[id]||1;
+  const w=CW*1.25*s; const im=document.createElement('img'); im.className='abs item'+(anim?' pop':''); im.src='img/'+id+'.png'; im.alt=ITEMS[id].n;
+  im.style.left=pct(x+CW/2-w/2,GW); im.style.width=pct(w,GW); im.style.bottom=pct(GH-(y+CH*0.92),GH); im.style.zIndex=10+r;
+  layer.appendChild(im);
+}
+
+/* ---------- interactions ---------- */
+function setMode(m){
+  mode=m; Object.values(cells).forEach(d=>d.classList.remove('hl')); Object.values(gaps).forEach(d=>d.classList.remove('hl'));
+  $('banner').classList.toggle('on',!!m);
+  if(!m) return;
+  if(m.type==='item'){ $('bannerTxt').textContent='Куда поставить: '+ITEMS[m.id].n+'?'; Object.entries(cells).forEach(([k,d])=>{ if(!S.placed[k]) d.classList.add('hl'); }); }
+  else { $('bannerTxt').textContent='Нажимай между клетками'; Object.entries(gaps).forEach(([k,d])=>{ if(!S.paved[k]) d.classList.add('hl'); }); }
+}
+function cellTap(r,c){
+  const k=key(r,c);
+  if(mode && mode.type==='item'){
+    if(S.placed[k]) return;
+    S.placed[k]=mode.id; S.inv[mode.id]--; save(); renderAll();
+    layer.querySelectorAll('.item').forEach(e=>{}); // redraw done
+    const last=[...layer.querySelectorAll('.item')].find(e=>e.style.zIndex==10+r && e.src.includes(mode.id)); if(last){ last.classList.add('pop'); }
+    const [x,y]=cellXY(r,c); sparks(x+CW/2,y+CH/2); sfx.pop(); almaSay('Красиво! ✨');
+    if(!S.inv[mode.id]){ setMode(null); } else setMode(mode);
+    return;
+  }
+  if(!mode && S.placed[k]){ // offer removal
+    const b=$('rm'); const [x,y]=cellXY(r,c); box(b,x-6,y-40); b.classList.add('on'); sfx.tap();
+    b.onclick=()=>{ const id=S.placed[k]; delete S.placed[k]; S.inv[id]=(S.inv[id]||0)+1; save(); renderAll(); b.classList.remove('on'); toast(ITEMS[id].n+' — обратно в запас'); };
+    clearTimeout(b._h); b._h=setTimeout(()=>b.classList.remove('on'),2500);
+  }
+}
+function gapTap(k){
+  if(!mode || mode.type!=='paving' || S.paved[k]) return;
+  S.paved[k]=1; S.inv.paving--; save(); renderAll(); sfx.tap(); tone(300,.06,'square',.05);
+  if(!S.inv.paving){ setMode(null); toast('Брусчатка закончилась'); } else setMode(mode);
+}
+$('cancel').onclick=()=>{ sfx.tap(); setMode(null); };
+
+/* ---------- build panel ---------- */
+let cat=null;
+document.querySelectorAll('.cat').forEach(b=>b.onclick=()=>{ ac(); sfx.tap(); openPanel(b.dataset.cat); });
+$('pclose').onclick=()=>{ sfx.tap(); closePanel(); };
+function closePanel(){ $('panel').classList.remove('on'); document.querySelectorAll('.cat').forEach(b=>b.classList.remove('on')); cat=null; }
+const LOCK='<svg class="lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="12" rx="3" fill="#ffd54a" stroke="#7a5a00" stroke-width="1.5"/><path d="M8 10 V7 a4 4 0 0 1 8 0 V10" stroke="#ffd54a" stroke-width="3" fill="none"/></svg>';
+function openPanel(c){
+  cat=c; setMode(null); $('rm').classList.remove('on');
+  document.querySelectorAll('.cat').forEach(b=>b.classList.toggle('on',b.dataset.cat===c));
+  $('ptitleTxt').textContent={yard:'Общий двор',house:'Стройка дома',inside:'Интерьер дома'}[c];
+  const g=$('pgrid'); g.innerHTML='';
+  if(c==='yard'){
+    Object.entries(ITEMS).forEach(([id,it])=>{
+      const have=S.inv[id]||0, locked=S.lessons<it.u;
+      const d=document.createElement('div'); d.className='card'+(locked?' locked':'')+(!locked&&!have?' empty':'');
+      d.innerHTML=`<div class="pic"><img src="img/${id}.png" alt=""></div><div class="nm">${it.n}</div>`+
+        (locked?`${LOCK}<div class="ct">откроется на ${it.u}-м уроке</div>`: have?`<div class="ct">есть ${have}</div><button class="act">Поставить</button>`:`<div class="ct">дадут за урок</div>`);
+      const btn=d.querySelector('.act'); if(btn) btn.onclick=()=>{ sfx.tap(); closePanel(); setMode(id==='paving'?{type:'paving'}:{type:'item',id}); };
+      g.appendChild(d);
+    });
+  } else if(c==='house'){
+    HOUSES.forEach((h,i)=>{
+      const locked=S.lessons<h.u, built=i<=S.house, next=i===S.house+1;
+      const d=document.createElement('div'); d.className='card'+(locked?' locked':'');
+      d.innerHTML=`<div class="pic"><img src="img/${h.id}.png" alt=""></div><div class="nm">${h.n}</div>`+
+        (i===S.house?'<div class="ct">Сейчас стоит</div>': built?'<div class="ct">Уже построен</div>': locked?`${LOCK}<div class="ct">откроется на ${h.u}-м уроке</div>`: next?'<button class="act gold">Построить</button>':'<div class="ct">сначала прошлый</div>');
+      const btn=d.querySelector('.act'); if(btn) btn.onclick=()=>buildHouse(i);
+      g.appendChild(d);
+    });
+  } else {
+    INSIDE.forEach(n=>{ const d=document.createElement('div'); d.className='card locked';
+      d.innerHTML=`<div class="pic"><svg viewBox="0 0 40 30" style="height:80%" aria-hidden="true"><rect x="4" y="10" width="32" height="14" rx="4" fill="#9a9a9a"/><rect x="8" y="4" width="24" height="10" rx="4" fill="#b0b0b0"/></svg></div><div class="nm">${n}</div>${LOCK}<div class="ct">откроется на 50-м уроке</div>`;
+      g.appendChild(d); });
+  }
+  $('panel').classList.add('on');
+}
+function buildHouse(i){
+  closePanel(); sfx.build(); toast('🔨 Тук-тук… строим!',1200);
+  const h=$('house'); h.style.transition='transform .3s'; h.style.transform='scale(.85,1.1)';
+  setTimeout(()=>{ S.house=i; save(); renderAll(); h.style.transform='scale(1.08)'; const [x,y]=cellXY(1,3); sparks(x+PX,y+40); sparks(x+PX-40,y+10);
+    setTimeout(()=>{ h.style.transform=''; almaSay('Наш новый дом! 🏡'); },250); },1300);
+}
+
+/* ---------- demo: pass a lesson ---------- */
+$('demo').onclick=()=>{
+  ac(); $('menu').classList.remove('on'); if(S.lessons>=200) return; S.lessons++;
+  const pool=Object.entries(ITEMS).filter(([id,it])=>S.lessons>=it.u).map(([id])=>id);
+  const id=pool[Math.floor(Math.random()*pool.length)]; const n=id==='paving'?3:1; S.inv[id]=(S.inv[id]||0)+n; save(); renderAll();
+  const newly=Object.values(ITEMS).find(it=>it.u===S.lessons) || HOUSES.find(h=>h.u===S.lessons);
+  sfx.ok(); toast(`Урок ${S.lessons} пройден! +${n} ${ITEMS[id].n}`+(newly?`\nОткрылось: ${newly.n}`:''),2200);
+  almaSay('Ура! 🎉'); if(cat) openPanel(cat);
+};
+$('gear').onclick=()=>{ ac(); sfx.tap(); $('menu').classList.toggle('on'); };
+$('reset').onclick=()=>{ $('menu').classList.remove('on'); try{localStorage.removeItem('almaHome')}catch(e){} location.reload(); };
+
+drawYard();
+setTimeout(()=>almaSay('Привет! Это наш двор 👋'),600);
+try{ window.toast=window.toast||toast; }catch(e){}
+mountNav(document.getElementById('game'),'yard','../');
+</script>
+</body>
+</html>

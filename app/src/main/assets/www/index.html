@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Карта уроков</title>
+<style>
+@font-face{font-family:"Game";src:url(fonts/inter-Bold.otf) format("opentype");font-weight:700 800}
+@font-face{font-family:"Game";src:url(fonts/inter-ExtraBold.otf) format("opentype");font-weight:900}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#2a1a0e;font-family:"Game",Roboto,Arial,sans-serif;overflow:hidden}
+#wrap{height:100%;display:flex;align-items:center;justify-content:center}
+#app{position:relative;width:min(100vw,calc(100vh*1024/1760));aspect-ratio:1024/1760;container-type:inline-size;background:linear-gradient(#6b4220,#4a2c12);overflow:hidden}
+#map{position:relative;width:100%;aspect-ratio:1024/1536;container-type:inline-size;overflow:hidden;
+  background:url(img/map1.jpg) center/100% 100% no-repeat;user-select:none}
+.abs{position:absolute}
+button{font-family:inherit;border:none;background:none;padding:0;cursor:pointer;color:inherit}
+
+#title{left:50%;top:1.2%;translate:-50% 0;width:62%;aspect-ratio:1000/136;background:url(img/ui_plank.png) center/100% 100% no-repeat;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:6cqw;color:#5a3010;z-index:5;filter:drop-shadow(0 0.8cqw 0.8cqw rgba(0,0,0,.3))}
+#title b{font-size:4cqw;font-weight:900;line-height:1;margin-top:0.6cqw}
+#title span{font-size:3cqw;font-weight:800;color:#8a5a2e}
+
+.node{translate:-50% -50%;z-index:3;border-radius:50%;transition:transform .12s}
+.node:active{transform:scale(.92)}
+.node .tint{position:absolute;inset:0;border-radius:50%}
+.node.locked .tint{background:rgba(70,55,40,.55);mix-blend-mode:multiply}
+.node.done .tint{background:#5fd13a;mix-blend-mode:color}
+.node.cur .tint{background:#ffd23a;mix-blend-mode:color}
+.node.cur::before{content:"";position:absolute;inset:-70% -45%;border-radius:50%;background:radial-gradient(rgba(255,245,160,.85),rgba(255,215,60,.4) 45%,rgba(255,200,0,0) 70%);animation:glow 1.6s ease-in-out infinite;z-index:-1;pointer-events:none}
+@keyframes glow{0%,100%{opacity:.55;transform:scale(.9)}50%{opacity:1;transform:scale(1.08)}}
+.node .num{position:absolute;inset:-20% 0 0 0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;
+  -webkit-text-stroke:0.6cqw #6b3510;paint-order:stroke fill;text-shadow:0 0.5cqw 0 #6b3510;line-height:1}
+.node.locked .num{-webkit-text-stroke:0;text-shadow:0 0.3cqw 0.4cqw rgba(0,0,0,.4)}
+.node .flag{position:absolute;left:55%;bottom:45%;width:55%;pointer-events:none}
+#chestHit{left:52.2%;top:10.9%;width:11%;aspect-ratio:1.1;translate:-50% -50%;z-index:7;border-radius:30%}
+#chestHit.ready::before{content:"";position:absolute;inset:-35%;border-radius:50%;background:radial-gradient(rgba(255,245,160,.9),rgba(255,210,60,.45) 45%,rgba(255,200,0,0) 70%);mix-blend-mode:screen;animation:glow 1.2s ease-in-out infinite}
+#pts{right:3%;top:11.5%;z-index:6;background:linear-gradient(#fff6e2,#f3dfb6);border:0.6cqw solid #8a5a2e;border-radius:3cqw;padding:1cqw 2.6cqw;font-weight:900;font-size:3.8cqw;color:#3d220d;box-shadow:0 0.8cqw 0 #5a3417}
+.fly{position:absolute;z-index:40;font-weight:900;font-size:6cqw;color:#ffd23f;text-shadow:0 0.6cqw 0 #a0600a,0 0 1cqw #fff;pointer-events:none;transition:all 1.1s cubic-bezier(.3,.8,.4,1)}
+#start{z-index:20;left:50%;translate:-50% 0;width:62%;background:linear-gradient(#fff6e2,#f3dfb6);border:0.9cqw solid #8a5a2e;border-radius:4cqw;padding:3cqw;text-align:center;
+  box-shadow:0 1.4cqw 0 #5a3417;display:none}
+#start.on{display:block;animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+#start b{display:block;font-size:4.6cqw;color:#3d220d}
+#start small{display:block;font-size:3.3cqw;color:#8a5a2e;font-weight:800;margin:1cqw 0 2.4cqw}
+.go{width:100%;min-height:10cqw;border-radius:3cqw;font-size:4.6cqw;font-weight:900;color:#3d220d;background:linear-gradient(#ffe066,#ffb92e);border:0.6cqw solid #b97a12;box-shadow:0 1cqw 0 #8a5a0c}
+.go:active{transform:translateY(0.8cqw);box-shadow:0 0.2cqw 0 #8a5a0c}
+
+
+#intro{inset:0;z-index:50;display:none}
+#intro.on{display:block}
+#ia{position:absolute;left:10%;width:24%;top:104%;transform-origin:50% 100%;filter:drop-shadow(0 1cqw 0.8cqw rgba(0,0,0,.35));transition:top .35s cubic-bezier(.3,1.5,.5,1)}
+#ia.squash{animation:squash .35s ease}
+#ia.growl{animation:growl .1s linear 8}
+#ia.look{animation:look 1s ease}
+#ia.run{transition:top .8s ease-in,left .8s ease-in,width .8s ease-in;}
+@keyframes squash{0%{transform:scale(1.15,.82)}60%{transform:scale(.94,1.06)}100%{transform:none}}
+@keyframes growl{0%,100%{transform:translateX(0)}50%{transform:translateX(3%) rotate(2deg)}}
+@keyframes look{0%,100%{transform:none}30%{transform:scaleX(-1)}60%{transform:none}}
+#ib{position:absolute;left:30%;top:58%;max-width:62%;background:#fffdf6;border:0.6cqw solid #5a3417;border-radius:3.5cqw;padding:2.2cqw 3.2cqw;font-weight:900;color:#3d220d;font-size:4.4cqw;line-height:1.2;
+  box-shadow:0 1cqw 0 rgba(0,0,0,.25);opacity:0;transform:scale(.6);transition:all .25s cubic-bezier(.3,1.6,.5,1)}
+#ib.on{opacity:1;transform:none}
+#ib small{display:block;font-size:3.3cqw;color:#8a5a2e;font-weight:700;margin-top:0.8cqw}
+#ib::after{content:"";position:absolute;width:3.4cqw;height:3.4cqw;background:#fffdf6;border:0.6cqw solid #5a3417;border-top-color:transparent;border-left-color:transparent;left:-2.1cqw;bottom:22%;transform:rotate(135deg)}
+#ibtn{position:absolute;left:30%;top:76%;width:44%;display:none}
+#ibtn.on{display:block;animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
+#whiteout{inset:0;background:#fff;opacity:0;pointer-events:none;z-index:60;transition:opacity .45s}
+#yardBtn{left:3%;bottom:2%;z-index:6;width:11cqw;height:11cqw;border-radius:50%;background:linear-gradient(#fff6e2,#f3dfb6);border:0.6cqw solid #8a5a2e;box-shadow:0 0.8cqw 0 #5a3417;font-size:5.6cqw}
+
+#enSlot{left:3%;top:11.5%;z-index:6}
+#toast{left:50%;bottom:6%;translate:-50% 0;z-index:30;background:rgba(40,20,5,.85);color:#fff;font-weight:800;font-size:3.6cqw;padding:2cqw 4cqw;border-radius:3cqw;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+#toast.on{opacity:1}
+#demo{right:3%;bottom:2%;z-index:25;font-size:2.8cqw;font-weight:800;color:#fff;background:rgba(40,20,5,.55);padding:1.2cqw 2.4cqw;border-radius:3cqw}
+</style>
+<script src="nav.js"></script>
+<script src="energy.js"></script>
+<script src="rig.js"></script>
+</head>
+<body>
+<div id="wrap"><div id="app"><div id="map">
+  <div id="title" class="abs"><b>Раздел 1 · Магазин у дома</b></div>
+    <div id="start" class="abs"><b id="stT"></b><small id="stS"></small><button class="go" id="stGo">Начать ▶</button></div>
+  <button id="chestHit" class="abs" aria-label="Сундук"></button>
+    <div id="pts" class="abs">⭐ <span id="ptsN">0</span></div>
+  <div id="intro" class="abs"><div id="ia"></div><div id="ib"></div><button class="go" id="ibtn">Идём! 🛒</button></div>
+  <div id="whiteout" class="abs"></div>
+    <div id="enSlot" class="abs"></div>
+  <div id="toast" class="abs"></div>
+  <button id="demo" class="abs">тест: урок пройден ✓</button>
+</div></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const W=1024,H=1536;
+const NODES=[[393,1370,116,60],[571,1272,114,59],[647,1133,110,57],[487,1007,107,56],[578,884,104,54],[695,788,102,53],[558,647,99,51],[661,511,95,50],[473,432,93,48],[574,290,90,47]];
+const TITLES=['Магазин у дома: купить хлеб','Молоко и вода','Фрукты для друзей','Считаем до пяти','До десяти и деньги','Дайте, пожалуйста','Большой и маленький','Вкусно!','Извините и до свидания','Повторение: чай у Апы'];
+const LESSON_URL={1:'lesson.html'};
+let done=0, pts=0, chestOpened=false; try{ done=+localStorage.getItem('almaMapDone')||0; pts=+localStorage.getItem('almaPts')||0; chestOpened=localStorage.getItem('almaChest1')==='1'; }catch(e){}
+function save(){ try{ localStorage.setItem('almaMapDone',done); localStorage.setItem('almaPts',pts); localStorage.setItem('almaChest1',chestOpened?'1':'0'); }catch(e){} }
+
+let AC=null; function ac(){ try{ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} return AC; }
+function tone(f,t=.08,type='triangle',v=.1,d=0){ const c=ac(); if(!c) return; const o=c.createOscillator(),g=c.createGain(),s=c.currentTime+d; o.type=type; o.frequency.value=f; g.gain.setValueAtTime(v,s); g.gain.exponentialRampToValueAtTime(.001,s+t); o.connect(g); g.connect(c.destination); o.start(s); o.stop(s+t+.02); }
+function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('on'); clearTimeout(e._t); e._t=setTimeout(()=>e.classList.remove('on'),1600); }
+
+const flagSVG='<svg class="flag" viewBox="0 0 30 40"><rect x="3" y="2" width="3" height="38" rx="1.5" fill="#b07a2a"/><circle cx="4.5" cy="3" r="3" fill="#ffd34a"/><path d="M6 5 Q18 3 28 9 Q18 15 6 13Z" fill="#ff7a2e" stroke="#c24f10" stroke-width="1.2"/></svg>';
+function render(){
+  document.querySelectorAll('.node').forEach(n=>n.remove());
+  NODES.forEach(([x,y,w,h],i)=>{
+    const n=i+1, b=document.createElement('button'); b.className='node abs';
+    b.style.left=(x/W*100)+'%'; b.style.top=(y/H*100)+'%'; b.style.width=(w*1.04/W*100)+'%'; b.style.height=(h*1.08/H*100)+'%'; b.style.fontSize=(w/W*100*0.5)+'cqw';
+    const st= n<=done?'done': n===done+1?'cur':'locked'; b.classList.add(st); 
+    b.innerHTML='<div class="tint"></div><div class="num">'+(st==='locked'?'🔒':n)+'</div>'+(st==='cur'?'<img class="flag" src="img/flag.png" alt="">':'');
+    b.onclick=()=>{ ac();
+      if(st==='locked'){ tone(200,.15,'square',.05); toast('Сначала пройди урок '+(done+1)+' 🙂'); return; }
+      tone(660); openStart(n,x,y); };
+    $('map').appendChild(b);
+  });
+  const ch=$('chestHit'); ch.className='abs '+(chestOpened?'':done>=10?'ready':''); $('ptsN').textContent=pts;
+}
+function openStart(n,x,y){
+  $('stT').textContent='Урок '+n; $('stS').textContent=TITLES[n-1];
+  const s=$('start'); s.style.top= (y/H*100 > 50 ? (y/H*100-30) : (y/H*100+7))+'%'; s.classList.add('on');
+  $('stGo').textContent= n<=done? 'Повторить ↺' : 'Начать ▶';
+  $('stGo').onclick=async()=>{ tone(880); s.classList.remove('on'); if(LESSON_URL[n]&&!Energy.has()){ if(!(await Energy.ask($('map'),'Подожду'))) return; } if(n===1) intro(); else if(LESSON_URL[n]) location.href=LESSON_URL[n]; else toast('Урок '+n+' скоро появится ✨'); };
+}
+$('map').addEventListener('click',e=>{ if(!e.target.closest('.node')&&!e.target.closest('#start')) $('start').classList.remove('on'); });
+$('chestHit').onclick=async()=>{ ac();
+  if(chestOpened){ toast('Сундук уже открыт 🙂'); return; }
+  if(done<10){ tone(200,.15,'square',.05); toast('Сундук откроется после 10 уроков 🔒'); return; }
+  chestOpened=true; $('chestHit').className='abs'; [523,659,784,1047].forEach((f,i)=>tone(f,.2,'triangle',.12,i*.1));
+  const r=$('chestHit').getBoundingClientRect(), m=$('map').getBoundingClientRect(), p=$('pts').getBoundingClientRect();
+  const f=document.createElement('div'); f.className='fly'; f.textContent='+50 ⭐'; f.style.left=(r.left-m.left)+'px'; f.style.top=(r.top-m.top)+'px'; $('map').appendChild(f);
+  await new Promise(r=>setTimeout(r,60)); f.style.left=(p.left-m.left)+'px'; f.style.top=(p.top-m.top)+'px'; f.style.opacity=0;
+  setTimeout(()=>{ f.remove(); pts+=50; save(); $('ptsN').textContent=pts; toast('Раздел 1 пройден! +50 очков 🎉'); },1100);
+};
+
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+
+
+function growlSnd(){ const c=ac(); if(!c) return; [0,.35].forEach(d=>{ const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+d; o.type='sawtooth'; o.frequency.setValueAtTime(95,t); o.frequency.exponentialRampToValueAtTime(55,t+.4); g.gain.setValueAtTime(.07,t); g.gain.exponentialRampToValueAtTime(.001,t+.45); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+.5); }); }
+async function intro(){
+  const I=$('intro'), A=$('ia'), B=$('ib'), btn=$('ibtn');
+  I.classList.add('on'); A.className='rig'; A.style.cssText=''; IA.reset(); B.classList.remove('on'); btn.classList.remove('on');
+  await wait(300);
+  A.style.top='92%'; tone(500,.08); await wait(500);            // peek: only the top of her head
+  A.classList.add('look'); await wait(1000); A.classList.remove('look');
+  tone(400,.06); tone(800,.12,'triangle',.1,.08);
+  A.style.top='72%'; await wait(380); A.classList.add('squash'); tone(300,.08); await wait(400); A.classList.remove('squash');
+  growlSnd(); IA.mood('hungry'); await wait(1000);
+  B.innerHTML='Урррр… 😳 Это мой животик!<small>Я так проголодалась… Пойдём в магазин за хлебом?</small>'; B.classList.add('on');
+  await wait(500); btn.classList.add('on');
+  await new Promise(r=>btn.onclick=()=>{ ac(); tone(880); r(); });
+  btn.classList.remove('on'); B.classList.remove('on');
+  IA.walk(true); A.classList.add('run'); A.style.top='30%'; A.style.left='45%'; A.style.width='8%';
+  for(let i=0;i<5;i++) setTimeout(()=>tone(300+i*40,.05),i*150);
+  await wait(650); $('whiteout').style.opacity=1; await wait(450);
+  location.href='lesson.html';
+}
+if((()=>{try{return localStorage.getItem('almaJustDone')==='1'}catch(e){return false}})()){ try{localStorage.removeItem('almaJustDone')}catch(e){}; setTimeout(()=>toast('Урок 1 пройден! Следующий — урок 2 🎉'),400); }
+$('demo').onclick=()=>{ ac(); done=(done+1)%11; if(done===0){chestOpened=false;pts=0;Energy.reset();} save(); tone(880); render(); };
+const IA=createRig($('ia'),'puppet/'); render(); window.toast=toast; Energy.mount($('enSlot')); mountNav($('app'),'map','');
+</script>
+</body>
+</html>
