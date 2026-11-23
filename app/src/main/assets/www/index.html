@@ -37,12 +37,18 @@ button{font-family:inherit;border:none;background:none;padding:0;cursor:pointer;
 #chestHit.ready::before{content:"";position:absolute;inset:-35%;border-radius:50%;background:radial-gradient(rgba(255,245,160,.9),rgba(255,210,60,.45) 45%,rgba(255,200,0,0) 70%);mix-blend-mode:screen;animation:glow 1.2s ease-in-out infinite}
 #pts{right:3%;top:11.5%;z-index:6;background:linear-gradient(#fff6e2,#f3dfb6);border:0.6cqw solid #8a5a2e;border-radius:3cqw;padding:1cqw 2.6cqw;font-weight:900;font-size:3.8cqw;color:#3d220d;box-shadow:0 0.8cqw 0 #5a3417}
 .fly{position:absolute;z-index:40;font-weight:900;font-size:6cqw;color:#ffd23f;text-shadow:0 0.6cqw 0 #a0600a,0 0 1cqw #fff;pointer-events:none;transition:all 1.1s cubic-bezier(.3,.8,.4,1)}
-#start{z-index:20;left:50%;translate:-50% 0;width:62%;background:linear-gradient(#fff6e2,#f3dfb6);border:0.9cqw solid #8a5a2e;border-radius:4cqw;padding:3cqw;text-align:center;
+#start{z-index:20;left:50%;translate:-50% 0;width:70%;background:linear-gradient(#fff6e2,#f3dfb6);border:0.9cqw solid #8a5a2e;border-radius:4cqw;padding:3cqw;text-align:center;
   box-shadow:0 1.4cqw 0 #5a3417;display:none}
 #start.on{display:block;animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
 @keyframes pop{from{transform:scale(.6);opacity:0}}
-#start b{display:block;font-size:4.6cqw;color:#3d220d}
-#start small{display:block;font-size:3.3cqw;color:#8a5a2e;font-weight:800;margin:1cqw 0 2.4cqw}
+#start b{display:block;font-size:4.8cqw;color:#3d220d}
+#start .num{display:inline-block;font-size:3cqw;font-weight:900;color:#fff;background:#8a5a2e;border-radius:2cqw;padding:0.4cqw 2cqw;margin-bottom:1.2cqw}
+#start .pic{height:18cqw;display:flex;align-items:center;justify-content:center;margin:0.4cqw 0 1cqw}
+#start .pic img{max-height:100%;max-width:60%;filter:drop-shadow(0 1cqw 1cqw rgba(0,0,0,.25))}
+#start .pic span{font-size:14cqw;line-height:1;filter:drop-shadow(0 1cqw 1cqw rgba(0,0,0,.2))}
+#start .kz{display:block;font-size:4.2cqw;font-weight:900;color:#2f6f18;margin-top:0.6cqw}
+#start .ph{display:block;font-size:3.1cqw;font-weight:800;color:#8a5a2e;background:#fff;border:0.4cqw dashed #d6b98a;border-radius:2cqw;padding:1cqw 1.6cqw;margin:1.6cqw 0 2.4cqw}
+
 .go{width:100%;min-height:10cqw;border-radius:3cqw;font-size:4.6cqw;font-weight:900;color:#3d220d;background:linear-gradient(#ffe066,#ffb92e);border:0.6cqw solid #b97a12;box-shadow:0 1cqw 0 #8a5a0c}
 .go:active{transform:translateY(0.8cqw);box-shadow:0 0.2cqw 0 #8a5a0c}
 
@@ -68,6 +74,22 @@ button{font-family:inherit;border:none;background:none;padding:0;cursor:pointer;
 #yardBtn{left:3%;bottom:2%;z-index:6;width:11cqw;height:11cqw;border-radius:50%;background:linear-gradient(#fff6e2,#f3dfb6);border:0.6cqw solid #8a5a2e;box-shadow:0 0.8cqw 0 #5a3417;font-size:5.6cqw}
 
 #enSlot{left:3%;top:11.5%;z-index:6}
+
+#deckBox{position:absolute;inset:0;z-index:30;background:rgba(40,20,5,.55);display:none}
+#deckBox.on{display:block}
+#deckBox #start{display:block;top:12%;animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
+#fan{position:absolute;left:0;right:0;bottom:1%;height:22%;pointer-events:none}
+.mc{position:absolute;bottom:4%;left:50%;width:12.5cqw;aspect-ratio:3/4.2;margin-left:-6.25cqw;transform-origin:50% 100%;border-radius:2.2cqw;pointer-events:auto;cursor:pointer;
+  transition:transform .35s cubic-bezier(.3,1.4,.5,1),box-shadow .2s;border:0.7cqw solid #8a5a2e;box-shadow:0 0.8cqw 1.6cqw rgba(0,0,0,.35);
+  background:linear-gradient(#fffdf6,#f3dfb6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4cqw;font-weight:900;color:#3d220d}
+.mc .e{font-size:7cqw;line-height:1} .mc img{width:70%} .mc .n{font-size:2.6cqw;color:#8a5a2e}
+.mc.back{background:#b8432a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><path d='M20 4 C26 12 36 14 36 20 C36 26 26 28 20 36 C14 28 4 26 4 20 C4 14 14 12 20 4Z' fill='none' stroke='%23ffd56a' stroke-width='2.4'/><circle cx='20' cy='20' r='4' fill='%23ffd56a'/></svg>") center/60% repeat;border-color:#ffd56a;color:#fff}
+.mc.back .e{font-size:6cqw;text-shadow:0 0.4cqw 0 rgba(0,0,0,.35)}
+.mc.done.back{background-color:#3f9a2c}
+.mc.sel{box-shadow:0 0 0 0.8cqw #ffe066,0 0 3cqw 1cqw rgba(255,220,80,.9);z-index:20}
+.mc.flip{animation:flip .6s ease}
+@keyframes flip{0%{transform:var(--t) rotateY(0)}50%{transform:var(--t) rotateY(90deg)}100%{transform:var(--t) rotateY(0)}}
+#deckClose{position:absolute;right:5%;top:4%;width:10cqw;height:10cqw;border-radius:50%;background:#fff6e2;border:0.6cqw solid #8a5a2e;font-size:5cqw;font-weight:900;color:#8a5a2e;box-shadow:0 0.6cqw 0 #5a3417;z-index:40}
 #toast{left:50%;bottom:6%;translate:-50% 0;z-index:30;background:rgba(40,20,5,.85);color:#fff;font-weight:800;font-size:3.6cqw;padding:2cqw 4cqw;border-radius:3cqw;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 #toast.on{opacity:1}
 #demo{right:3%;bottom:2%;z-index:25;font-size:2.8cqw;font-weight:800;color:#fff;background:rgba(40,20,5,.55);padding:1.2cqw 2.4cqw;border-radius:3cqw}
@@ -79,12 +101,12 @@ button{font-family:inherit;border:none;background:none;padding:0;cursor:pointer;
 <body>
 <div id="wrap"><div id="app"><div id="map">
   <div id="title" class="abs"><b>Раздел 1 · Магазин у дома</b></div>
-    <div id="start" class="abs"><b id="stT"></b><small id="stS"></small><button class="go" id="stGo">Начать ▶</button></div>
-  <button id="chestHit" class="abs" aria-label="Сундук"></button>
+      <button id="chestHit" class="abs" aria-label="Сундук"></button>
     <div id="pts" class="abs">⭐ <span id="ptsN">0</span></div>
   <div id="intro" class="abs"><div id="ia"></div><div id="ib"></div><button class="go" id="ibtn">Идём! 🛒</button></div>
   <div id="whiteout" class="abs"></div>
     <div id="enSlot" class="abs"></div>
+  <div id="deckBox" class="abs"><div id="start" class="abs"><span class="num" id="stN"></span><div class="pic" id="stP"></div><b id="stT"></b><span class="kz" id="stK"></span><span class="ph" id="stS"></span><button class="go" id="stGo">Начать ▶</button></div><div id="fan"></div><button id="deckClose">✕</button></div>
   <div id="toast" class="abs"></div>
   <button id="demo" class="abs">тест: урок пройден ✓</button>
 </div></div></div>
@@ -92,7 +114,18 @@ button{font-family:inherit;border:none;background:none;padding:0;cursor:pointer;
 const $=id=>document.getElementById(id);
 const W=1024,H=1536;
 const NODES=[[393,1370,116,60],[571,1272,114,59],[647,1133,110,57],[487,1007,107,56],[578,884,104,54],[695,788,102,53],[558,647,99,51],[661,511,95,50],[473,432,93,48],[574,290,90,47]];
-const TITLES=['Магазин у дома: купить хлеб','Молоко и вода','Фрукты для друзей','Считаем до пяти','До десяти и деньги','Дайте, пожалуйста','Большой и маленький','Вкусно!','Извините и до свидания','Повторение: чай у Апы'];
+const CARDS=[
+ ['Хлеб','нан','🍞','Сәлеметсіз бе! · Рақмет!','img/bread.png'],
+ ['Молоко и кефир','сүт · айран','🥛','…бар ма? — есть?'],
+ ['Масло и сметана','май · қаймақ','🧈','иә / жоқ — да / нет'],
+ ['Яйца','жұмыртқа','🥚','бір, екі, үш… — счёт'],
+ ['Сыр и курт','ірімшік · құрт','🧀','Қанша тұрады? — сколько стоит?'],
+ ['Чай и сахар','шай · қант','🍵','Маған … беріңізші — дайте мне'],
+ ['Фрукты','алма · банан','🍎','үлкен / кіші — большой / маленький'],
+ ['Вода и сок','су · шырын','🧃','Кешіріңіз — извините'],
+ ['Полная корзина','всё вместе','🧺','Барлығы қанша? — сколько всего?'],
+ ['Разговор с Апой','повторение','⭐','весь диалог без подсказок']];
+const TITLES=CARDS.map(c=>c[0]);
 const LESSON_URL={1:'lesson.html'};
 let done=0, pts=0, chestOpened=false; try{ done=+localStorage.getItem('almaMapDone')||0; pts=+localStorage.getItem('almaPts')||0; chestOpened=localStorage.getItem('almaChest1')==='1'; }catch(e){}
 function save(){ try{ localStorage.setItem('almaMapDone',done); localStorage.setItem('almaPts',pts); localStorage.setItem('almaChest1',chestOpened?'1':'0'); }catch(e){} }
@@ -110,19 +143,35 @@ function render(){
     const st= n<=done?'done': n===done+1?'cur':'locked'; b.classList.add(st); 
     b.innerHTML='<div class="tint"></div><div class="num">'+(st==='locked'?'🔒':n)+'</div>'+(st==='cur'?'<img class="flag" src="img/flag.png" alt="">':'');
     b.onclick=()=>{ ac();
-      if(st==='locked'){ tone(200,.15,'square',.05); toast('Сначала пройди урок '+(done+1)+' 🙂'); return; }
-      tone(660); openStart(n,x,y); };
+      tone(660); openStart(n); };
     $('map').appendChild(b);
   });
   const ch=$('chestHit'); ch.className='abs '+(chestOpened?'':done>=10?'ready':''); $('ptsN').textContent=pts;
 }
-function openStart(n,x,y){
-  $('stT').textContent='Урок '+n; $('stS').textContent=TITLES[n-1];
-  const s=$('start'); s.style.top= (y/H*100 > 50 ? (y/H*100-30) : (y/H*100+7))+'%'; s.classList.add('on');
-  $('stGo').textContent= n<=done? 'Повторить ↺' : 'Начать ▶';
-  $('stGo').onclick=async()=>{ tone(880); s.classList.remove('on'); if(LESSON_URL[n]&&!Energy.has()){ if(!(await Energy.ask($('map'),'Подожду'))) return; } if(n===1) intro(); else if(LESSON_URL[n]) location.href=LESSON_URL[n]; else toast('Урок '+n+' скоро появится ✨'); };
+function cardState(n){ return n<=done?'done': n===done+1?'cur':'locked'; }
+function showCard(n){
+  const c=CARDS[n-1], stt=cardState(n);
+  $('stN').textContent='Урок '+n+(stt==='done'?' · пройден ✓':''); $('stT').textContent=c[0]; $('stK').textContent= stt==='locked'?'🔒 откроется позже':c[1]; $('stS').textContent= stt==='locked'?'Сначала пройди урок '+(done+1):c[3];
+  $('stP').innerHTML= c[4]?'<img src="'+c[4]+'" alt="">':'<span>'+c[2]+'</span>';
+  const g=$('stGo'); g.style.display= stt==='locked'?'none':'block'; g.textContent= stt==='done'? 'Повторить ↺' : 'Начать ▶';
+  g.onclick=async()=>{ tone(880); $('deckBox').classList.remove('on'); if(LESSON_URL[n]&&!Energy.has()){ if(!(await Energy.ask($('map'),'Подожду'))) return; } if(n===1) intro(); else if(LESSON_URL[n]) location.href=LESSON_URL[n]; else toast('Урок '+n+' скоро появится ✨'); };
+  document.querySelectorAll('.mc').forEach(m=>m.classList.toggle('sel',+m.dataset.n===n));
 }
-$('map').addEventListener('click',e=>{ if(!e.target.closest('.node')&&!e.target.closest('#start')) $('start').classList.remove('on'); });
+function buildFan(sel){
+  const F=$('fan'); F.innerHTML='';
+  CARDS.forEach((c,i)=>{ const n=i+1, stt=cardState(n), m=document.createElement('div');
+    const k=i-4.5, t='translate('+(k*8)+'cqw,'+(k*k*0.5)+'cqw) rotate('+(k*4)+'deg)'; m.style.setProperty('--t',t); m.style.transform=t; m.dataset.n=n;
+    m.className='mc'+(stt==='cur'?'':' back')+(stt==='done'?' done':'');
+    m.innerHTML= stt==='cur' ? (c[4]?'<img src="'+c[4]+'" alt="">':'<span class="e">'+c[2]+'</span>')+'<span class="n">'+n+'</span>'
+              : '<span class="e">'+(stt==='done'?'✓':'🔒')+'</span><span class="n" style="color:#fff">'+n+'</span>';
+    m.onmouseenter=()=>{ m.style.transform=t+' translateY(-10%)'; }; m.onmouseleave=()=>{ m.style.transform=t; };
+    m.onclick=e=>{ e.stopPropagation(); ac(); tone(stt==='locked'?300:700,.06); m.classList.remove('flip'); void m.offsetWidth; m.classList.add('flip'); showCard(n); };
+    F.appendChild(m); });
+  showCard(sel);
+}
+function openStart(n){ $('deckBox').classList.add('on'); buildFan(n); }
+$('deckClose').onclick=()=>{ tone(500,.05); $('deckBox').classList.remove('on'); };
+$('deckBox').addEventListener('click',e=>{ if(e.target.id==='deckBox') $('deckBox').classList.remove('on'); });
 $('chestHit').onclick=async()=>{ ac();
   if(chestOpened){ toast('Сундук уже открыт 🙂'); return; }
   if(done<10){ tone(200,.15,'square',.05); toast('Сундук откроется после 10 уроков 🔒'); return; }
