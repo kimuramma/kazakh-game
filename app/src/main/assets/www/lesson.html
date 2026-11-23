@@ -10,7 +10,8 @@
 @font-face{font-family:"Game";src:url(fonts/inter-ExtraBold.otf) format("opentype");font-weight:900}
 html,body{margin:0;height:100%;background:#2a1a0e;font-family:"Game",Roboto,Arial,sans-serif;overflow:hidden}
 #wrap{height:100%;display:flex;align-items:center;justify-content:center}
-#game{position:relative;width:min(100vw,calc(100vh*848/1264));aspect-ratio:848/1264;container-type:inline-size;overflow:hidden;
+#outer{position:relative;height:100%;width:min(100vw,calc(100vh*9/16));container-type:size;overflow:hidden;background:linear-gradient(rgb(144,108,75) 50%,rgb(185,150,106) 50%)}
+#game{position:absolute;left:50%;top:0;translate:-50% 0;height:100%;width:calc(100cqh*848/1264);container-type:inline-size;overflow:hidden;
   background:#000;user-select:none}
 .scene{inset:0;background-size:cover;background-position:center;transition:opacity .6s}
 #sShop{background-image:url(img/shop.jpg);opacity:0}
@@ -19,13 +20,13 @@ html,body{margin:0;height:100%;background:#2a1a0e;font-family:"Game",Roboto,Aria
 button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0;color:inherit}
 
 /* progress */
-#bar{left:4%;right:24%;top:1.6%;height:4.2cqw;border-radius:3cqw;background:#5a3417;border:0.6cqw solid #3d220d;box-shadow:0 0.6cqw 0 rgba(0,0,0,.3);overflow:hidden}
+#bar{left:4%;right:16%;top:1.6%;height:4.2cqw;border-radius:3cqw;background:#5a3417;border:0.6cqw solid #3d220d;box-shadow:0 0.6cqw 0 rgba(0,0,0,.3);overflow:hidden}
 #barfill{height:100%;width:0;background:linear-gradient(#9be15d,#3fb43f);border-radius:3cqw;transition:width .5s cubic-bezier(.3,1.4,.5,1);box-shadow:inset 0 0.8cqw 0 rgba(255,255,255,.35)}
 
 /* items */
-#bread{left:70.5%;top:34.1%;width:20%;transition:all .9s cubic-bezier(.5,-0.2,.4,1.2);z-index:4}
+#bread{left:calc(100% - var(--vl,0%) - 25%);top:34.1%;width:20%;transition:all .9s cubic-bezier(.5,-0.2,.4,1.2);z-index:4}
 #bread.glow{filter:drop-shadow(0 0 1.5cqw #fff36b) drop-shadow(0 0 3cqw #ffd54a);animation:wig 1s ease-in-out infinite}
-#tagBox{left:56.6%;top:37.7%;width:15.3%;transition:transform .3s;z-index:4}
+#tagBox{left:calc(100% - var(--vl,0%) - 40%);top:37.7%;width:15.3%;transition:transform .3s;z-index:4}
 #tag{width:100%;display:block}
 #tagTxt{position:absolute;left:44%;top:60%;translate:-50% -50%;rotate:-33deg;font-weight:900;font-size:4cqw;color:#6e3412;white-space:nowrap}
 #tagBox.pop{transform:scale(1.5) rotate(-6deg)}
@@ -47,7 +48,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0;
 #apaSay{left:50%;top:4.8%;translate:-50% 0;max-width:62%;text-align:center}
 #apaSay::after,#almaSay::after{content:"";position:absolute;width:3.4cqw;height:3.4cqw;background:#fffdf6;border:0.6cqw solid #5a3417;border-top-color:transparent;border-left-color:transparent}
 #apaSay::after{left:50%;bottom:-2.1cqw;margin-left:-1.7cqw;transform:rotate(45deg)}
-#almaSay{left:31%;top:50%;max-width:50%}
+#almaSay{left:calc(var(--vl,0%) + 34%);top:42%;max-width:calc(100% - 2*var(--vl,0%) - 38%)}
 #almaSay::after{left:-2.1cqw;top:40%;transform:rotate(135deg)}
 #almaSay.home{left:30%;top:31%;max-width:56%}
 #almaSay.home::after{left:72%;top:auto;bottom:-2.1cqw;transform:rotate(45deg)}
@@ -107,15 +108,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0;
 #card .rew img{width:100%}
 #card .btns{display:flex;flex-direction:column;gap:3cqw}
 </style>
-<script src="energy.js"></script>
 <script src="rig.js"></script>
 </head>
 <body>
-<div id="wrap"><div id="game">
+<div id="wrap"><div id="outer"><div id="game">
     <div id="sShop" class="abs scene"></div>
-  <div id="bar" class="abs"><div id="barfill"></div></div>
-  <div id="enL" class="abs" style="right:3%;top:0.6%;z-index:35"></div>
-  <button id="dictBtn" class="abs" aria-label="Словарь">📖</button>
   <div id="shopItems" style="display:none">
     <div id="tagBox" class="abs"><img id="tag" src="img/tag.png" alt="ценник"><span id="tagTxt">?</span></div>
     <img id="bread" class="abs" src="img/bread.png" alt="нан">
@@ -124,6 +121,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0;
   <div id="apaSay" class="abs bubble"></div>
   <div id="almaSay" class="abs bubble"></div>
 
+
+</div>
+  <div id="bar" class="abs"><div id="barfill"></div></div>
+  <button id="dictBtn" class="abs" aria-label="Словарь">📖</button>
   <div id="panel" class="abs hide">
     <div id="q"></div>
     <div id="slot" style="display:none"></div>
@@ -202,10 +203,11 @@ function sparks(el,n=14){ const r=el.getBoundingClientRect(),g=G.getBoundingClie
 const TOTAL=6; let stepN=0;
 function progress(){ stepN++; $('barfill').style.width=(stepN/TOTAL*100)+'%'; }
 function panel(show){ $('panel').classList.toggle('hide',!show); }
-function place(l,t,w){ const b=$('almaBox'); b.style.left=l+'%'; b.style.top=t+'%'; if(w) b.style.width=w+'%'; }
+let VL=0; function calcVL(){ VL=Math.max(0,(1-$('outer').clientWidth/G.clientWidth)/2*100); G.style.setProperty('--vl',VL+'%'); }
+addEventListener('resize',calcVL);
+function place(l,t,w){ calcVL(); const b=$('almaBox'); b.style.left=(l+VL)+'%'; b.style.top=t+'%'; if(w) b.style.width=w+'%'; }
 
-async function pay(){ if(Energy.spend()) return; panel(false);
-  const ok=await Energy.ask(G,'Выйти на карту'); if(!ok){ location.href='index.html'; return new Promise(()=>{}); } Energy.spend(); }
+async function pay(){ }
 function ask(qHtml,opts){
   return new Promise(res=>{
     $('q').innerHTML=qHtml; $('slot').style.display='none'; const box=$('opts'); box.innerHTML='';
@@ -298,7 +300,7 @@ async function lesson(){
 
   // pay
   hush(); for(let i=0;i<2;i++){ const c=document.createElement('div'); c.className='coin abs'; c.textContent='100';
-    c.style.left='20%'; c.style.top='50%'; G.appendChild(c); await sleep(30); c.style.left=(52+i*6)+'%'; c.style.top='41%'; sfx.coin(); await sleep(450); setTimeout(()=>c.remove(),900); }
+    c.style.left=(VL+20)+'%'; c.style.top='50%'; G.appendChild(c); await sleep(30); c.style.left=(100-VL-34+i*6)+'%'; c.style.top='41%'; sfx.coin(); await sleep(450); setTimeout(()=>c.remove(),900); }
   await sleep(400);
 
   // 5. thanks
@@ -309,7 +311,7 @@ async function lesson(){
     {t:'Рақмет!',ok:true},
     {t:'Сәлеметсіз бе!',react:'Мы уже здоровались 🙃'}]);
   RIG.talk(1200); say('alma',K('Рақмет','Спасибо')+', апа! 💛',1800); speak('Рақмет'); progress(); panel(false);
-  await sleep(500); br.style.left='9%'; br.style.top='62%'; br.style.width='12%'; br.style.zIndex=6; sfx.tap();
+  await sleep(500); br.style.left=(VL+9)+'%'; br.style.top='62%'; br.style.width='12%'; br.style.zIndex=6; sfx.tap();
   await sleep(950); br.style.display='none'; RIG.hold(true); alma('happy'); sparks(br,20); say('alma','Ммм, свежий нан! 🥖 Я его обожаю!');
   await sleep(1800); progress(); hush();
 
@@ -324,7 +326,7 @@ function finish(){ try{ const d=+localStorage.getItem('almaMapDone')||0; if(d<1)
 $('goYard').onclick=()=>{ sfx.tap(); finish(); setTimeout(()=>location.href='yard/index.html',150); };
 $('toYard').onclick=()=>{ sfx.tap(); finish(); setTimeout(()=>location.href='index.html',150); };
 $('alma').onclick=()=>{ ac(); alma('happy'); say('alma',['Хи-хи, щекотно! 😆','Я Алма! 🍎','Пошли за нааан!'][Math.floor(Math.random()*3)],1400); };
-window.toast=window.toast||((t)=>{}); RIG=createRig($('alma'),'puppet/','img/bread.png'); Energy.mount($('enL')); (async()=>{ lesson(); })();
+window.toast=window.toast||((t)=>{}); RIG=createRig($('alma'),'puppet/','img/bread.png'); (async()=>{ lesson(); })();
 </script>
 </body>
 </html>

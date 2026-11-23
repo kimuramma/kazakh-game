@@ -9,7 +9,8 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:#2f6b2a;font-family:Nunito,system-ui,sans-serif;overflow:hidden}
 #wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-#game{position:relative;width:min(100vw, calc(100dvh * 2 / 3));aspect-ratio:1024/1536;container-type:inline-size;overflow:hidden;
+#outer{position:relative;height:100%;width:min(100vw,calc(100vh*9/16));container-type:size;overflow:hidden;display:flex;align-items:center;background:linear-gradient(rgb(99,204,253) 50%,rgb(119,145,50) 50%)}
+#game{position:relative;width:100%;aspect-ratio:1024/1536;container-type:inline-size;overflow:hidden;
   background:url(img/bg.jpg) center/100% 100% no-repeat;user-select:none}
 .abs{position:absolute}
 button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0}
@@ -99,7 +100,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0}
 <script src="../nav.js"></script>
 </head>
 <body>
-<div id="wrap"><div id="game">
+<div id="wrap"><div id="outer"><div id="game">
 
   <div id="layer" class="abs" style="inset:0"></div>
 
@@ -126,7 +127,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0}
   </div>
 
   <div id="toast" class="abs wood woodtxt"></div>
-</div></div>
+</div></div></div>
 
 <script>
 /* ---------- geometry (in the 1024 x 1536 picture) ---------- */
@@ -196,7 +197,7 @@ function drawYard(){
   h.style.left=pct(hx-20,GW); h.style.width=pct(hw+40,GW); h.style.bottom=pct(GH-(Y0+3*PY-12),GH); layer.appendChild(h);
   // alma
   const [ax,ay]=cellXY(ALMA_CELL[0],ALMA_CELL[1]); const a=document.createElement('img'); a.id='alma'; a.className='abs'; a.src='img/alma.png'; a.alt='Алма';
-  a.style.left=pct(ax+6,GW); a.style.width=pct(CW-10,GW); a.style.bottom=pct(GH-(ay+CH+4),GH); layer.appendChild(a);
+  a.style.left=pct(ax-40,GW); a.style.width=pct(CW+80,GW); a.style.bottom=pct(GH-(ay+CH+4),GH); layer.appendChild(a);
   a.onclick=()=>{ sfx.tap(); almaSay(['Привет! 👋','Давай строить!','Ура, наш двор!'][Math.floor(Math.random()*3)]); };
   const b=document.createElement('div'); b.id='almaBubble'; b.className='abs bubble'; b.style.right=pct(GW-(ax+CW+10),GW); b.style.bottom=pct(GH-(ay-36),GH); b.style.zIndex=50; layer.appendChild(b);
   renderAll();
@@ -313,7 +314,7 @@ $('reset').onclick=()=>{ $('menu').classList.remove('on'); try{localStorage.remo
 drawYard();
 setTimeout(()=>almaSay('Привет! Это наш двор 👋'),600);
 try{ window.toast=window.toast||toast; }catch(e){}
-mountNav(document.getElementById('game'),'yard','../');
+mountNav(document.getElementById('outer'),'yard','../');
 </script>
 </body>
 </html>
