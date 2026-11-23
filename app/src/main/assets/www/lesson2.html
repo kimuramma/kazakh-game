@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Урок 2 — Молоко и кефир</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+@font-face{font-family:"Game";src:url(fonts/inter-Bold.otf) format("opentype");font-weight:700 800}
+@font-face{font-family:"Game";src:url(fonts/inter-ExtraBold.otf) format("opentype");font-weight:900}
+html,body{margin:0;height:100%;background:#2a1a0e;font-family:"Game",Roboto,Arial,sans-serif;overflow:hidden}
+#wrap{height:100%;display:flex;align-items:center;justify-content:center}
+#outer{position:relative;height:100%;width:min(100vw,calc(100vh*9/16));container-type:size;overflow:hidden;background:linear-gradient(rgb(144,108,75) 50%,rgb(185,150,106) 50%)}
+#game{position:absolute;left:50%;top:0;translate:-50% 0;height:100%;width:calc(100cqh*848/1264);container-type:inline-size;overflow:hidden;
+  background:#000;user-select:none}
+.scene{inset:0;background-size:cover;background-position:center;transition:opacity .6s}
+#sShop{background-image:url(img/shop.jpg);opacity:0}
+#fade{inset:0;background:#fff;opacity:0;pointer-events:none;z-index:70;transition:opacity .4s}
+.abs{position:absolute}
+button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0;color:inherit}
+
+/* progress */
+#bar{left:4%;right:16%;top:1.6%;height:4.2cqw;border-radius:3cqw;background:#5a3417;border:0.6cqw solid #3d220d;box-shadow:0 0.6cqw 0 rgba(0,0,0,.3);overflow:hidden}
+#barfill{height:100%;width:0;background:linear-gradient(#9be15d,#3fb43f);border-radius:3cqw;transition:width .5s cubic-bezier(.3,1.4,.5,1);box-shadow:inset 0 0.8cqw 0 rgba(255,255,255,.35)}
+
+/* items */
+#bread{left:calc(100% - var(--vl,0%) - 25%);top:34.1%;width:20%;transition:all .9s cubic-bezier(.5,-0.2,.4,1.2);z-index:4}
+#bread.glow{filter:drop-shadow(0 0 1.5cqw #fff36b) drop-shadow(0 0 3cqw #ffd54a);animation:wig 1s ease-in-out infinite}
+#tagBox{left:calc(100% - var(--vl,0%) - 40%);top:37.7%;width:15.3%;transition:transform .3s;z-index:4}
+#tag{width:100%;display:block}
+#tagTxt{position:absolute;left:44%;top:60%;translate:-50% -50%;rotate:-33deg;font-weight:900;font-size:4cqw;color:#6e3412;white-space:nowrap}
+#tagBox.pop{transform:scale(1.5) rotate(-6deg)}
+#almaBox{left:1%;top:41%;width:29%;z-index:5;transition:left 1.2s ease-in-out,top 1.2s ease-in-out,width .6s}
+#almaBox::before{content:"";position:absolute;left:12%;right:40%;bottom:-2%;height:5%;border-radius:50%;background:rgba(70,40,15,.35);filter:blur(0.8cqw)}
+#alma{position:relative;width:100%;display:block;filter:drop-shadow(0 1cqw 1cqw rgba(60,30,10,.25));cursor:pointer}
+@keyframes sad{0%,100%{transform:rotate(-3deg) scaleY(.97)}50%{transform:rotate(3deg) scaleY(.95)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2%)}}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-14%) scale(1.03,.97)}60%{transform:translateY(0) scale(1.06,.94)}}
+@keyframes shake{0%,100%{transform:translateX(0) rotate(0)}20%{transform:translateX(-5%) rotate(-4deg)}40%{transform:translateX(5%) rotate(4deg)}60%{transform:translateX(-3%)}80%{transform:translateX(3%)}}
+@keyframes growl{0%,100%{transform:translateX(0)}50%{transform:translateX(1.5%) scaleX(1.02)}}
+@keyframes wig{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+
+/* fridge */
+#fr{left:calc(100% - var(--vl,0%) - 31%);top:31%;width:27%;z-index:3;cursor:pointer;filter:drop-shadow(0 1.4cqw 1.2cqw rgba(60,30,10,.35))}
+#fr.glow{filter:drop-shadow(0 0 1.5cqw #fff36b) drop-shadow(0 0 3cqw #ffd54a);animation:wig 1.2s ease-in-out infinite}
+#fr img{width:100%;display:block}
+#fz{inset:0;z-index:28;background:rgba(30,20,10,.55);display:none;align-items:flex-start;justify-content:center;padding-top:6cqh}
+#fz.on{display:flex}
+#bigF{position:relative;width:min(70cqw,39cqh);perspective:150cqw;animation:pop .45s cubic-bezier(.3,1.5,.5,1)}
+#bigF>img.frame{width:100%;display:block}
+.prod{position:absolute;transform:translateX(-50%);height:15%;cursor:pointer;transition:transform .25s,filter .25s;filter:drop-shadow(0 .6cqw .5cqw rgba(0,40,80,.35))}
+.prod img{height:100%;display:block}
+.prod.ok{transform:translateX(-50%) scale(1.25);filter:drop-shadow(0 0 1.4cqw #b9f58f) drop-shadow(0 0 2.6cqw #6fd34c)}
+.prod.bad{animation:pshake .4s}
+.prod.glow{filter:drop-shadow(0 0 1.2cqw #fff36b) drop-shadow(0 0 2.4cqw #ffd54a);animation:pwig 1s ease-in-out infinite}
+@keyframes pshake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(-62%) rotate(-8deg)}75%{transform:translateX(-38%) rotate(8deg)}}
+@keyframes pwig{0%,100%{transform:translateX(-50%) rotate(0)}25%{transform:translateX(-50%) rotate(-6deg)}75%{transform:translateX(-50%) rotate(6deg)}}
+#door{position:absolute;left:9%;top:5.3%;width:82.5%;height:76.5%;border-radius:2cqw;transform-origin:0 50%;transition:transform .9s cubic-bezier(.4,1.4,.5,1);z-index:5;cursor:pointer;
+  background:linear-gradient(115deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.55) 27%,rgba(255,255,255,0) 34%,rgba(255,255,255,0) 55%,rgba(255,255,255,.35) 60%,rgba(255,255,255,0) 64%),rgba(190,228,255,.45);
+  border:1cqw solid #e6f2fa;box-shadow:inset 0 0 3cqw rgba(255,255,255,.8),0 0 0 .4cqw #9fb9cc}
+#door::after{content:"";position:absolute;right:2%;top:40%;width:4%;height:20%;border-radius:2cqw;background:linear-gradient(90deg,#c9d6df,#fff,#aebdc8);box-shadow:0 .4cqw .6cqw rgba(0,0,0,.3)}
+#door.open{transform:rotateY(-112deg);pointer-events:none}
+#door .hint{position:absolute;left:50%;top:44%;translate:-50% -50%;font-size:10cqw;animation:pwig 1s infinite;pointer-events:none}
+#door.open .hint{display:none}
+#cold{position:absolute;inset:5% 9% 18%;pointer-events:none;z-index:6;overflow:hidden}
+#cold i{position:absolute;bottom:-10%;width:12%;height:12%;border-radius:50%;background:radial-gradient(rgba(255,255,255,.9),rgba(255,255,255,0) 70%);animation:mist 2.4s ease-out forwards}
+@keyframes mist{to{transform:translateY(-500%) scale(2.4);opacity:0}}
+/* bubbles */
+.bubble{background:#fffdf6;border:0.6cqw solid #5a3417;border-radius:3.5cqw;padding:2cqw 3.2cqw;font-weight:900;color:#3d220d;font-size:4.4cqw;line-height:1.2;
+  box-shadow:0 1cqw 0 rgba(0,0,0,.25);opacity:0;transform:scale(.6);transition:all .25s cubic-bezier(.3,1.6,.5,1);pointer-events:none;z-index:20}
+.bubble.on{opacity:1;transform:none}
+.bubble small{display:block;font-size:3.3cqw;font-weight:700;color:#8a5a2e;margin-top:0.6cqw}
+#apaSay{left:50%;top:4.8%;translate:-50% 0;max-width:62%;text-align:center}
+#apaSay::after,#almaSay::after{content:"";position:absolute;width:3.4cqw;height:3.4cqw;background:#fffdf6;border:0.6cqw solid #5a3417;border-top-color:transparent;border-left-color:transparent}
+#apaSay::after{left:50%;bottom:-2.1cqw;margin-left:-1.7cqw;transform:rotate(45deg)}
+#almaSay{left:calc(var(--vl,0%) + 34%);top:42%;max-width:calc(100% - 2*var(--vl,0%) - 38%)}
+#almaSay::after{left:-2.1cqw;top:40%;transform:rotate(135deg)}
+#almaSay.home{left:30%;top:31%;max-width:56%}
+#almaSay.home::after{left:72%;top:auto;bottom:-2.1cqw;transform:rotate(45deg)}
+.w{border-bottom:0.5cqw dashed #c49a5e;cursor:pointer;pointer-events:auto;position:relative}
+.w .tip{position:absolute;left:50%;bottom:120%;translate:-50% 0;background:#2f6f18;color:#fff;font-size:3.4cqw;font-weight:800;white-space:nowrap;padding:1cqw 2cqw;border-radius:2cqw;opacity:0;transform:translateY(1cqw);transition:all .2s;pointer-events:none}
+.w.show .tip{opacity:1;transform:none}
+.bubble.on{pointer-events:auto}
+.spk{display:inline-block;margin-left:1.4cqw;font-size:4cqw;cursor:pointer;pointer-events:auto}
+
+/* panel */
+#panel{left:0;right:0;bottom:0;max-height:31%;z-index:30;padding:3cqw 4cqw 3.4cqw;
+  background:linear-gradient(#fff6e2,#f3dfb6);border-top:1.2cqw solid #8a5a2e;border-radius:6cqw 6cqw 0 0;box-shadow:0 -1.4cqw 3cqw rgba(0,0,0,.3);
+  display:flex;flex-direction:column;gap:2cqw;transition:transform .35s cubic-bezier(.3,1.3,.5,1)}
+#panel.hide{transform:translateY(105%)}
+#q{font-size:4.4cqw;font-weight:900;color:#3d220d;line-height:1.2}
+#q small{display:block;font-size:3.2cqw;color:#8a5a2e;font-weight:700;margin-top:0.6cqw}
+#opts{display:flex;flex-wrap:wrap;gap:2.2cqw;align-content:flex-start}
+.opt{flex:1 1 28%;min-height:10.5cqw;padding:1.6cqw 1.6cqw;border-radius:3.6cqw;font-size:4.6cqw;line-height:1.15;font-weight:900;color:#3d220d;
+  background:linear-gradient(#fffdf6,#f6e7c6);border:0.6cqw solid #b98a4a;box-shadow:0 1.2cqw 0 #8a5a2e;transition:transform .08s,box-shadow .08s,background .2s}
+.opt:active{transform:translateY(1cqw);box-shadow:0 0.2cqw 0 #8a5a2e}
+.opt.ok{background:linear-gradient(#b9f58f,#6fd34c);border-color:#2f8a1f;box-shadow:0 1.2cqw 0 #2f6f18;color:#173d0b}
+.opt.bad{background:linear-gradient(#ffc4b8,#ff8e7a);border-color:#c0392b;box-shadow:0 1.2cqw 0 #8e2a1e;animation:shake .4s}
+.opt.off{opacity:.45;pointer-events:none}
+.opt small{display:block;font-size:2.9cqw;font-weight:700;color:#8a5a2e}
+#slot{min-height:11cqw;border-bottom:0.6cqw dashed #b98a4a;display:flex;flex-wrap:wrap;gap:2cqw;align-items:center;padding-bottom:1.4cqw}
+.tile{flex:0 0 auto;min-height:10cqw;padding:1.6cqw 3.6cqw;font-size:5.2cqw}
+.big{width:100%;flex:none;min-height:11.5cqw;font-size:5cqw;background:linear-gradient(#ffe066,#ffb92e);border-color:#b97a12;box-shadow:0 1.2cqw 0 #8a5a0c}
+#learn{display:flex;align-items:center;gap:4cqw;background:#fff;border:0.6cqw solid #b98a4a;border-radius:3.6cqw;padding:2.4cqw 3.6cqw}
+#learn b{font-size:8cqw;color:#2f6f18}
+#learn span{font-size:4.6cqw;font-weight:800;color:#8a5a2e}
+
+/* fx */
+.spark{position:absolute;width:3cqw;height:3cqw;border-radius:50%;background:radial-gradient(#fff,#ffe066 50%,rgba(255,200,0,0) 70%);pointer-events:none;z-index:40;animation:spark .8s ease-out forwards}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.coin{position:absolute;width:7cqw;height:7cqw;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff7b0,#ffd23f 40%,#c98a00);border:0.5cqw solid #9a6a00;z-index:41;
+  display:flex;align-items:center;justify-content:center;font-weight:900;color:#7a4f00;font-size:3.4cqw;transition:all .7s cubic-bezier(.5,-0.3,.5,1.3)}
+
+/* dictionary */
+#dictBtn{right:3%;top:7%;z-index:35;width:11cqw;height:11cqw;border-radius:50%;background:linear-gradient(#fffdf6,#f6e7c6);border:0.6cqw solid #b98a4a;box-shadow:0 0.8cqw 0 #8a5a2e;font-size:5.6cqw}
+#dict{inset:0;z-index:80;background:rgba(40,20,5,.55);display:none;align-items:center;justify-content:center}
+#dict.on{display:flex}
+#dict .card2{width:86%;max-height:80%;overflow:auto;background:linear-gradient(#fff6e2,#f3dfb6);border:1.2cqw solid #8a5a2e;border-radius:6cqw;padding:5cqw}
+#dict h2{margin:0 0 3cqw;font-size:6.4cqw;color:#3d220d}
+#dict .row{display:flex;justify-content:space-between;gap:3cqw;padding:2.2cqw 1cqw;border-bottom:0.4cqw dashed #d6b98a;font-size:4.4cqw}
+#dict .row b{color:#2f6f18}
+#dict .row span{color:#8a5a2e;font-weight:700}
+/* result */
+#result{inset:0;z-index:60;background:rgba(40,20,5,.55);display:none;align-items:center;justify-content:center}
+#result.on{display:flex}
+#card{width:86%;background:linear-gradient(#fff6e2,#f3dfb6);border:1.2cqw solid #8a5a2e;border-radius:6cqw;padding:5cqw;text-align:center;box-shadow:0 2cqw 0 #5a3417;animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.5);opacity:0}}
+#card h2{margin:0 0 2cqw;font-size:7.4cqw;color:#2f6f18}
+#card .words{display:flex;flex-wrap:wrap;gap:1.6cqw;justify-content:center;margin:3cqw 0}
+#card .words span{background:#fff;border:0.4cqw solid #b98a4a;border-radius:2cqw;padding:1cqw 2.2cqw;font-weight:800;font-size:3.6cqw;color:#3d220d}
+#card .rew{display:flex;gap:4cqw;justify-content:center;margin:2cqw 0 4cqw}
+#card .rew div{width:28%;background:#fff;border-radius:3cqw;border:0.5cqw solid #b98a4a;padding:1.6cqw;font-weight:900;color:#3d220d;font-size:3.6cqw}
+#card .rew img{width:100%}
+#card .btns{display:flex;flex-direction:column;gap:3cqw}
+</style>
+<script src="rig.js"></script>
+</head>
+<body>
+<div id="wrap"><div id="outer"><div id="game">
+    <div id="sShop" class="abs scene"></div>
+  <div id="shopItems" style="display:none">
+    <div id="fr" class="abs"><img src="img/p/fridge.png" alt="тоңазытқыш"></div>
+    <div id="tagBox" class="abs" style="left:calc(var(--vl,0%) + 37%);top:45%;opacity:0;transition:opacity .3s,transform .3s"><img id="tag" src="img/tag.png" alt="ценник"><span id="tagTxt">?</span></div>
+  </div>
+  <div id="almaBox" class="abs"><div id="alma"></div></div>
+  <div id="apaSay" class="abs bubble"></div>
+  <div id="almaSay" class="abs bubble"></div>
+
+
+</div>
+  <div id="bar" class="abs"><div id="barfill"></div></div>
+  <button id="dictBtn" class="abs" aria-label="Словарь">📖</button>
+  <div id="panel" class="abs hide">
+    <div id="q"></div>
+    <div id="slot" style="display:none"></div>
+    <div id="opts"></div>
+  </div>
+
+  <div id="dict" class="abs"><div class="card2"><h2>📖 Мой словарь</h2><div id="dictList"></div>
+    <button class="opt big" style="margin-top:4cqw" onclick="document.getElementById('dict').classList.remove('on')">Закрыть</button></div></div>
+
+  <div id="fz" class="abs"><div id="bigF"><img class="frame" src="img/p/fridge.png" alt=""><div id="prods"></div><div id="cold"></div><div id="door"><span class="hint">👆</span></div></div></div>
+  <div id="result" class="abs">
+    <div id="card">
+      <h2>Урок 2 пройден! 🎉</h2>
+      <div style="font-weight:800;color:#8a5a2e;font-size:4cqw">Новые слова добавлены в словарь 📖</div>
+      <div class="words" id="newWords"></div>
+      <div style="font-weight:800;color:#8a5a2e;font-size:4cqw">Награда для домика:</div>
+      <div class="rew"><div><img src="yard/img/bench.png" alt="">+1 Скамейка</div></div>
+      <div class="btns">
+        <button class="opt big" id="toYard">На карту 🗺</button>
+        <button class="opt" id="goYard">Во двор 🏡</button>
+        <button class="opt" id="openDict">Словарь 📖</button>
+      </div>
+    </div>
+  </div>
+  <div id="fade" class="abs"></div>
+</div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const G=$('game');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---------- sound ---------- */
+let AC=null; function ac(){ try{ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} return AC; }
+function tone(f,t=.1,type='sine',v=.12,d=0,f2){ const c=ac(); if(!c) return; const o=c.createOscillator(),g=c.createGain(),s=c.currentTime+d;
+  o.type=type; o.frequency.setValueAtTime(f,s); if(f2) o.frequency.exponentialRampToValueAtTime(f2,s+t);
+  g.gain.setValueAtTime(v,s); g.gain.exponentialRampToValueAtTime(.001,s+t); o.connect(g); g.connect(c.destination); o.start(s); o.stop(s+t+.02); }
+const sfx={
+  tap(){tone(520,.06,'triangle',.08)},
+  ok(){tone(660,.1,'triangle',.12);tone(880,.12,'triangle',.12,.09);tone(1320,.18,'triangle',.1,.18)},
+  bad(){tone(220,.18,'square',.06);tone(170,.22,'square',.06,.12)},
+  growl(){tone(90,.5,'sawtooth',.07,0,60);tone(70,.4,'sawtooth',.06,.35,50)},
+  coin(){tone(1200,.08,'square',.05);tone(1600,.12,'square',.05,.07)},
+  step(){tone(300,.05,'triangle',.05)},
+  win(){[523,659,784,1047].forEach((f,i)=>tone(f,.25,'triangle',.12,i*.12))}
+};
+let kkVoice=null;
+function findVoice(){ try{ kkVoice=speechSynthesis.getVoices().find(x=>/^kk/i.test(x.lang))||null; }catch(e){} }
+try{ findVoice(); speechSynthesis.onvoiceschanged=findVoice; }catch(e){}
+function speak(t){ if(!kkVoice) return; try{ const u=new SpeechSynthesisUtterance(t); u.voice=kkVoice; u.lang=kkVoice.lang; u.rate=.85; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+
+/* ---------- words with hidden translation (tap to see) ---------- */
+// K([['Нан','хлеб'],['бар','есть'],['ма?','(вопрос)']])  or K('Рақмет!','Спасибо!')
+function K(a,b){ const parts=Array.isArray(a)?a:[[a,b]];
+  return parts.map(([w,t])=>`<span class="w" onclick="tip(this,event)">${w}<span class="tip">${t}</span></span>`).join(' '); }
+function tip(el,ev){ ac(); sfx.tap(); speak(el.firstChild.textContent); el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); ev&&ev.stopPropagation(); }
+
+/* ---------- dictionary ---------- */
+const WORDS=[['Сүт','Молоко'],['Айран','Айран (кисломолочный напиток)'],['Тоңазытқыш','Холодильник'],['Сүт бар ма?','Молоко есть?'],['Үш жүз теңге','Триста тенге'],['Екеуі','Оба (два вместе)'],['Сау болыңыз!','До свидания!']];
+function getDict(){ try{ return JSON.parse(localStorage.getItem('almaDict')||'[]'); }catch(e){ return window._dict||[]; } }
+function setDict(d){ window._dict=d; try{ localStorage.setItem('almaDict',JSON.stringify(d)); }catch(e){} }
+const LESSON='Урок 2. Молоко и кефир';
+function addWords(){ let d=getDict(); d=d.filter(x=>x[2]!==LESSON); WORDS.forEach(([k,r])=>d.push([k,r,LESSON])); setDict(d); }
+function showDict(){ ac(); sfx.tap(); const d=getDict();
+  const groups={}; d.forEach(([k,r,l])=>{ l=l||LESSON; (groups[l]=groups[l]||[]).push([k,r]); });
+  $('dictList').innerHTML=d.length? `<div style="font-weight:800;color:#8a5a2e;font-size:3.6cqw;margin-bottom:2cqw">Всего слов: ${d.length}</div>`+Object.entries(groups).map(([l,ws])=>`<div style="margin-top:3cqw;font-weight:900;color:#3d220d;font-size:4.2cqw;background:#f0d9a8;border-radius:2cqw;padding:1.4cqw 2.4cqw">${l}</div>`+ws.map(([k,r])=>`<div class="row" onclick="speak('${k}')"><b>${k}</b><span>${r}</span></div>`).join('')).join('') : '<div style="color:#8a5a2e;font-weight:700;font-size:4cqw">Пока пусто. Пройди урок — и слова появятся здесь!</div>';
+  $('dict').classList.add('on'); }
+$('dictBtn').onclick=showDict; $('openDict').onclick=showDict;
+
+/* ---------- helpers ---------- */
+function say(who,html,ms){ const b=$(who==='apa'?'apaSay':'almaSay'); b.innerHTML=html; b.classList.add('on'); clearTimeout(b._t); if(ms) b._t=setTimeout(()=>b.classList.remove('on'),ms); }
+function hush(who){ (who?[who]:['apa','alma']).forEach(w=>$(w==='apa'?'apaSay':'almaSay').classList.remove('on')); }
+let RIG=null; function alma(mood){ if(!RIG) return; if(mood) RIG.mood(mood); else RIG.reset(); }
+function sparks(el,n=14){ const r=el.getBoundingClientRect(),g=G.getBoundingClientRect(); const cx=r.left+r.width/2-g.left, cy=r.top+r.height/2-g.top;
+  for(let i=0;i<n;i++){ const s=document.createElement('div'); s.className='spark'; s.style.left=cx+'px'; s.style.top=cy+'px';
+    const a=Math.random()*Math.PI*2, d=40+Math.random()*70; s.style.setProperty('--dx',Math.cos(a)*d+'px'); s.style.setProperty('--dy',Math.sin(a)*d+'px'); G.appendChild(s); setTimeout(()=>s.remove(),850);} }
+const TOTAL=7; let stepN=0;
+function progress(){ stepN++; $('barfill').style.width=(stepN/TOTAL*100)+'%'; }
+function panel(show){ $('panel').classList.toggle('hide',!show); }
+let VL=0; function calcVL(){ VL=Math.max(0,(1-$('outer').clientWidth/G.clientWidth)/2*100); G.style.setProperty('--vl',VL+'%'); }
+addEventListener('resize',calcVL);
+function place(l,t,w){ calcVL(); const b=$('almaBox'); b.style.left=(l+VL)+'%'; b.style.top=t+'%'; if(w) b.style.width=w+'%'; }
+
+async function pay(){ }
+function ask(qHtml,opts){
+  return new Promise(res=>{
+    $('q').innerHTML=qHtml; $('slot').style.display='none'; const box=$('opts'); box.innerHTML='';
+    opts.forEach(o=>{ const b=document.createElement('button'); b.className='opt'; b.innerHTML=o.t;
+      b.onclick=async()=>{ ac();
+        if(o.ok){ sfx.ok(); b.classList.add('ok'); [...box.children].forEach(x=>x!==b&&x.classList.add('off')); sparks(b); alma('happy'); await sleep(900); res(); }
+        else{ sfx.bad(); b.classList.add('bad'); alma('oops'); if(o.react) say('alma',o.react,2400); setTimeout(()=>{b.classList.remove('bad');b.classList.add('off')},450); }
+      };
+      box.appendChild(b); });
+    panel(true);
+  });
+}
+function build(qHtml,tiles,answer,badSay){
+  return new Promise(res=>{
+    $('q').innerHTML=qHtml; const slot=$('slot'); slot.style.display='flex'; slot.innerHTML=''; const box=$('opts'); box.innerHTML='';
+    let got=[];
+    tiles.forEach(t=>{ const b=document.createElement('button'); b.className='opt tile'; b.textContent=t;
+      b.onclick=async()=>{ ac(); sfx.tap(); if(b.parentElement===box){ slot.appendChild(b); got.push(t);} else { box.appendChild(b); got.splice(got.indexOf(t),1);}
+        if(got.length===answer.length){
+          if(got.join(' ')===answer.join(' ')){ sfx.ok(); [...slot.children].forEach(x=>x.classList.add('ok')); [...box.children].forEach(x=>x.classList.add('off')); sparks(slot); alma('happy'); await sleep(900); res(); }
+          else{ sfx.bad(); alma('oops'); [...slot.children].forEach(x=>x.classList.add('bad')); say('alma',badSay,2400);
+            await sleep(700); [...slot.children].forEach(x=>{x.classList.remove('bad'); box.appendChild(x)}); got=[]; }
+        }
+      };
+      box.appendChild(b); });
+    panel(true);
+  });
+}
+function cont(qHtml,btn){ return new Promise(res=>{ $('q').innerHTML=qHtml; $('slot').style.display='none'; const box=$('opts'); box.innerHTML='';
+  const b=document.createElement('button'); b.className='opt big'; b.innerHTML=btn; b.onclick=()=>{ac();sfx.tap();res()}; box.appendChild(b); panel(true); }); }
+
+async function toScene(name){
+  $('fade').style.opacity=1; await sleep(420);
+  const shop=name==='shop';
+  $('sShop').style.opacity=shop?1:0; $('shopItems').style.display=shop?'':'none';
+  $('almaSay').classList.toggle('home',!shop);
+  const b=$('almaBox'); b.style.transition='none';
+  if(shop) place(0,40,35); else place(62,45,15);
+  void b.offsetWidth; b.style.transition='';
+  await sleep(80); $('fade').style.opacity=0; await sleep(420);
+}
+
+/* ---------- fridge ---------- */
+// row = shelf top (in % of fridge height), x = center in %
+const PRODS=[
+  {id:'milk',  src:'img/p/milk.png',    row:28,   x:32, kk:'Сүт',       ru:'молоко'},
+  {id:'ayran', src:'img/p/ayran.png',   row:28,   x:68, kk:'Айран',     ru:'айран'},
+  {id:'smet',  src:'img/p/smetana.png', row:45,   x:32, kk:'Қаймақ',    ru:'сметана', h:12},
+  {id:'butter',src:'img/p/butter.png',  row:45,   x:68, kk:'Сары май',  ru:'сливочное масло', h:10},
+  {id:'cheese',src:'img/p/cheese.png',  row:62,   x:32, kk:'Ірімшік',   ru:'сыр', h:10.5},
+  {id:'eggs',  src:'img/p/eggs.png',    row:62,   x:68, kk:'Жұмыртқа',  ru:'яйца', h:9},
+  {id:'ice',   src:'img/p/icecream.png',row:77.5, x:32, kk:'Балмұздақ', ru:'мороженое'},
+  {id:'water', src:'img/p/water.png',   row:77.5, x:68, kk:'Су',        ru:'вода'}
+];
+const JOKE={
+  smet:'Это қаймақ — сметана. Вкусно, но не то! 😋',
+  butter:'Сары май — масло. Его в чай не нальёшь 😅',
+  cheese:'Ірімшік — сыр. В нём дырки, а молоко без дырок 🧀',
+  eggs:'Жұмыртқа — яйца. Молоко они не дают, это к курице 🐔',
+  ice:'Балмұздақ — мороженое! Апа, оно же тут растает! 🍦😱',
+  water:'Су — вода. Сү-т и су — почти близнецы, но не путай! 💧',
+  ayran:'Это айран! Кислый… а Апа просила сүт 😉',
+  milk:'Сүт — молоко. Но сейчас нужен айран! 😉'
+};
+function buildFridge(){ const box=$('prods'); box.innerHTML='';
+  PRODS.forEach(p=>{ const d=document.createElement('div'); d.className='prod'; d.id='p_'+p.id;
+    d.style.left=p.x+'%'; d.style.bottom=(100-p.row+0.5)+'%'; d.style.height=(p.h||15)+'%';
+    d.innerHTML=`<img src="${p.src}" alt="${p.kk}">`; box.appendChild(d); }); }
+function mist(){ const c=$('cold'); for(let i=0;i<10;i++){ const m=document.createElement('i'); m.style.left=(5+Math.random()*85)+'%'; m.style.animationDelay=(i*0.12)+'s'; c.appendChild(m); setTimeout(()=>m.remove(),3200);} }
+function fridgeOpen(){ $('fz').classList.add('on'); }
+function fridgeClose(){ $('fz').classList.remove('on'); }
+function doorOpen(){ return new Promise(res=>{ const d=$('door'); if(d.classList.contains('open')) return res();
+  d.onclick=()=>{ ac(); tone(180,.25,'sine',.08,0,120); d.classList.add('open'); d.onclick=null; mist(); setTimeout(res,700); }; }); }
+// tap a product in the open fridge; ok = id of the right one
+function pick(qHtml,ok,extraBad){ return new Promise(res=>{
+  $('q').innerHTML=qHtml; $('slot').style.display='none'; $('opts').innerHTML=''; panel(true);
+  PRODS.forEach(p=>{ const el=$('p_'+p.id); el.classList.remove('bad','ok');
+    el.onclick=async()=>{ ac();
+      if(p.id===ok){ sfx.ok(); el.classList.add('ok'); sparks(el); alma('happy'); PRODS.forEach(q=>$('p_'+q.id).onclick=null); await sleep(900); el.classList.remove('ok'); res(el); }
+      else{ sfx.bad(); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); alma('oops');
+        $('opts').innerHTML=`<div id="learn" style="padding:1.6cqw 3cqw"><span style="font-size:4cqw">${(extraBad&&extraBad[p.id])||JOKE[p.id]}</span></div>`; }
+    }; });
+}); }
+function flyToAlma(el){ const r=el.getBoundingClientRect(), g=$('outer').getBoundingClientRect(), a=$('almaBox').getBoundingClientRect();
+  const f=el.cloneNode(true); f.className=''; f.style.cssText=`position:absolute;z-index:45;left:${r.left-g.left}px;top:${r.top-g.top}px;height:${r.height}px;transition:all .8s cubic-bezier(.5,-0.3,.4,1.2)`;
+  $('outer').appendChild(f); void f.offsetWidth; f.style.left=(a.left-g.left+a.width*.45)+'px'; f.style.top=(a.top-g.top+a.height*.4)+'px'; f.style.height=(r.height*.5)+'px'; f.style.opacity='.2';
+  setTimeout(()=>f.remove(),850); }
+
+/* ---------- the lesson ---------- */
+async function lesson(){
+  stepN=0; $('barfill').style.width='0'; $('result').classList.remove('on'); hush();
+  if(RIG) RIG.reset(); buildFridge(); $('door').classList.remove('open');
+  await toScene('shop');
+
+  // 1. greeting (review)
+  say('apa',K([['Сәлем,','привет,'],['Алма!','Алма!']])+' 😊'); speak('Сәлем, Алма');
+  await ask('Апа тебя узнала! Что ответишь?<small>Нажми на слово Апы, чтобы увидеть перевод</small>',[
+    {t:'Сәлеметсіз бе!',ok:true},
+    {t:'Нан',react:'Хлеб мы купили вчера! Сегодня за другим 😄'},
+    {t:'Сау болыңыз!',react:'Это «до свидания»! Мы только пришли 🙈'}]);
+  RIG.wave(1500); say('alma',K('Сәлеметсіз бе','Здравствуйте')+', апа! 👋',1800); speak('Сәлеметсіз бе'); progress(); panel(false); await sleep(1700);
+
+  // 2. the fridge
+  hush(); RIG.talk(1600); say('alma','Мама сказала купить молоко… А где оно? 🤔',2200); await sleep(2300);
+  say('apa',K([['Тоңазытқышта!','В холодильнике!']])+' ❄️'); speak('Тоңазытқышта'); $('fr').classList.add('glow');
+  await new Promise(res=>{ $('q').innerHTML='Апа показывает на холодильник. Нажми на него! 👆<small>Тоңазытқыш = холодильник</small>'; $('slot').style.display='none'; $('opts').innerHTML=''; panel(true);
+    $('fr').onclick=()=>{ ac(); sfx.tap(); $('fr').classList.remove('glow'); $('fr').onclick=null; hush(); fridgeOpen(); res(); }; });
+  $('q').innerHTML='Открой дверцу холодильника! 👆'; await doorOpen();
+  progress();
+
+  // 3. new word: сүт
+  $('p_milk').classList.add('glow');
+  await new Promise(res=>{ $('q').innerHTML='Новое слово! Нажми на бутылку молока 🥛'; $('opts').innerHTML='<div id="learn" style="opacity:.35"><b>?</b><span>нажми на молоко</span></div>';
+    $('p_milk').onclick=()=>{ ac(); sfx.ok(); const el=$('p_milk'); el.classList.remove('glow'); sparks(el); el.onclick=null;
+      $('opts').innerHTML='<div id="learn"><b>Сүт</b><span>= молоко 🥛</span></div>'; speak('Сүт'); setTimeout(res,1900); }; });
+  // and айран
+  $('p_ayran').classList.add('glow');
+  await new Promise(res=>{ $('q').innerHTML='А это что за пакет? Нажми! 👆'; $('opts').innerHTML='<div id="learn" style="opacity:.35"><b>?</b><span>нажми на пакет</span></div>';
+    $('p_ayran').onclick=()=>{ ac(); sfx.ok(); const el=$('p_ayran'); el.classList.remove('glow'); sparks(el); el.onclick=null;
+      $('opts').innerHTML='<div id="learn"><b>Айран</b><span>= айран, как кефир 🥛</span></div>'; speak('Айран'); setTimeout(res,1900); }; });
+  progress();
+
+  // 4. find сүт among everything
+  await pick('Найди в холодильнике: <b style="color:#2f6f18">Сүт</b><small>Осторожно, тут много всего вкусного!</small>','milk');
+  progress();
+  await ask('Как по-казахски «молоко»?',[
+    {t:'Су',react:'Су — вода 💧 Не хватает буквы «т»!'},
+    {t:'Сүт',ok:true},
+    {t:'Нан',react:'Нан — хлеб 🍞 Его ты уже знаешь!'}]);
+  panel(false); fridgeClose(); await sleep(300);
+
+  // 5. build "Сүт бар ма?" — funny: Alma asks even though she has seen it
+  hush();
+  await build('Спроси у Апы: «Молоко есть?»<small>Собери фразу</small>',['ма?','Нан','бар','Сүт'],['Сүт','бар','ма?'],'Почти! Сначала «Сүт» 😉');
+  RIG.talk(1400); say('alma',K([['Сүт','молоко'],['бар','есть'],['ма?','(вопрос)']]),1600); speak('Сүт бар ма'); panel(false); await sleep(1500);
+  say('apa',K([['Бар!','Есть!']])+' Ты же его только что видела 😄'); speak('Бар'); progress(); await sleep(2200);
+
+  // 6. ayran too + price
+  hush(); fridgeOpen();
+  await pick('Мама просила ещё <b style="color:#2f6f18">айран</b>. Найди его!','ayran');
+  fridgeClose(); hush();
+  RIG.talk(1500); say('alma',K([['Қанша','сколько'],['тұрады?','стоит?']])); speak('Қанша тұрады'); await sleep(1800);
+  say('apa',K([['Екеуі','оба вместе'],['үш','три'],['жүз','сто'],['теңге','тенге']])); speak('Екеуі үш жүз теңге');
+  $('tagBox').style.opacity=1; $('tagBox').classList.add('pop'); sfx.tap();
+  await ask('Сколько стоят молоко и айран вместе?<small>Үш = три, жүз = сто</small>',[
+    {t:'3 ₸',react:'Три тенге? Апа не волшебница 😂'},
+    {t:'300 ₸',ok:true},
+    {t:'3000 ₸',react:'Молоко от золотой коровы?! 🐄✨'}]);
+  $('tagTxt').textContent='300 ₸'; sparks($('tagBox'),10); $('tagBox').classList.remove('pop'); progress(); panel(false); await sleep(600);
+  hush(); for(let i=0;i<3;i++){ const c=document.createElement('div'); c.className='coin abs'; c.textContent='100';
+    c.style.left=(VL+20)+'%'; c.style.top='50%'; G.appendChild(c); await sleep(30); c.style.left=(VL+34+i*5)+'%'; c.style.top='33%'; sfx.coin(); await sleep(420); setTimeout(()=>c.remove(),900); }
+  await sleep(300); $('tagBox').style.opacity=0;
+
+  // 7. goodbye — new word
+  say('apa',K([['Мә,','вот,'],['ұста!','держи!']])+' 🥛');
+  await ask('Ты всё купила. Уходя, скажи «до свидания»!',[
+    {t:'Сәлеметсіз бе!',react:'Это «здравствуйте» 🙃 А мы уходим!'},
+    {t:'Сау болыңыз!',ok:true},
+    {t:'Айран',react:'Айран уже у тебя в руках 😄'}]);
+  RIG.talk(1200); say('alma',K('Рақмет','Спасибо')+'! '+K('Сау болыңыз','До свидания')+'! 👋',2000); speak('Сау болыңыз'); panel(false); progress();
+  await sleep(400); RIG.hold(true); alma('happy'); sparks($('almaBox'),20); await sleep(1600);
+  say('alma','Сүт есть, айран есть! Мама будет рада 💛'); await sleep(1900); hush();
+
+  addWords(); sfx.win();
+  $('newWords').innerHTML=WORDS.map(([k])=>`<span>${k}</span>`).join('');
+  $('result').classList.add('on');
+}
+function finish(){ try{ const d=+localStorage.getItem('almaMapDone')||0; if(d<2) localStorage.setItem('almaMapDone','2'); localStorage.setItem('almaJustDone','1');
+  if(!localStorage.getItem('almaL2reward')){ const S=JSON.parse(localStorage.getItem('almaHome')||'null')||{lessons:1,inv:{flowerbed:2,bush:1,spruce:1,paving:6},placed:{},paved:{},house:0};
+    S.inv.bench=(S.inv.bench||0)+1; S.lessons=Math.max(S.lessons||1,3); localStorage.setItem('almaHome',JSON.stringify(S)); localStorage.setItem('almaL2reward','1'); } }catch(e){} }
+$('goYard').onclick=()=>{ sfx.tap(); finish(); setTimeout(()=>location.href='yard/index.html',150); };
+$('toYard').onclick=()=>{ sfx.tap(); finish(); setTimeout(()=>location.href='index.html',150); };
+$('alma').onclick=()=>{ ac(); alma('happy'); say('alma',['Хи-хи, щекотно! 😆','Я Алма! 🍎','Сүт! Сүт! 🥛'][Math.floor(Math.random()*3)],1400); };
+window.toast=window.toast||((t)=>{}); RIG=createRig($('alma'),'puppet/','img/p/milk.png'); (async()=>{ lesson(); })();
+</script>
+</body>
+</html>
