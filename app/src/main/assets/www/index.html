@@ -91,10 +91,10 @@ button{font-family:inherit;border:none;background:none;padding:0;cursor:pointer;
 .blk.done{border-color:#4caf3a;box-shadow:0 1cqw 0 #2f7a22}
 .blk.done::after{content:"✓";position:absolute;right:-1.4cqw;top:-1.4cqw;width:7cqw;height:7cqw;border-radius:50%;background:#4caf3a;color:#fff;font-weight:900;font-size:4cqw;display:flex;align-items:center;justify-content:center;border:0.5cqw solid #fff}
 .blk.cur{border-color:#ffb92e;box-shadow:0 0 0 0.6cqw #ffe066,0 0 3cqw 0.6cqw rgba(255,210,60,.8),0 1cqw 0 #b97a12}
-.blk.locked{background:#e9e1d3;cursor:default}
-.blk.locked .ph{filter:grayscale(1) opacity(.35)}
-.blk.locked::after{content:"🔒";position:absolute;font-size:7cqw;top:24%}
-.blk.last{grid-column:2}
+.blk.locked::after{content:"🔒";position:absolute;right:-1.2cqw;top:-1.2cqw;width:7cqw;height:7cqw;border-radius:50%;background:#8a5a2e;font-size:3.6cqw;display:flex;align-items:center;justify-content:center;border:0.5cqw solid #fff}
+.blk.test{grid-column:1/-1;aspect-ratio:auto;flex-direction:row;gap:4cqw;padding:2.4cqw;background:linear-gradient(#fff3b0,#ffd54a);border-color:#e0a21a;box-shadow:0 1cqw 0 #b97a12}
+.blk.test .ph{height:auto} .blk.test .ph span{font-size:11cqw}
+.blk .tx{display:flex;flex-direction:column;text-align:left} .blk .tx b{font-size:5cqw} .blk .tx small{font-size:3.2cqw;font-weight:800;color:#8a5a2e}
 #toast{left:50%;bottom:24cqw;translate:-50% 0;z-index:30;background:rgba(40,20,5,.85);color:#fff;font-weight:800;font-size:3.6cqw;padding:2cqw 4cqw;border-radius:3cqw;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 #toast.on{opacity:1}
 #demo{right:3%;bottom:21cqw;z-index:25;font-size:2.8cqw;font-weight:800;color:#fff;background:rgba(40,20,5,.55);padding:1.2cqw 2.4cqw;border-radius:3cqw}
@@ -106,7 +106,7 @@ button{font-family:inherit;border:none;background:none;padding:0;cursor:pointer;
 <div id="wrap"><div id="app"><div id="map">
       <button id="chestHit" class="abs" aria-label="Сундук"></button>
 </div>
-  <div id="title" class="abs"><b>Раздел 1 · Магазин у дома</b></div>
+  <div id="title" class="abs"><b>Глава 1 · Первые шаги</b></div>
     <div id="pts" class="abs">⭐ <span id="ptsN">0</span></div>
   <div id="intro" class="abs"><div id="ia"></div><div id="ib"></div><button class="go" id="ibtn">Идём! 🛒</button></div>
   <div id="whiteout" class="abs"></div>
@@ -118,18 +118,8 @@ button{font-family:inherit;border:none;background:none;padding:0;cursor:pointer;
 const $=id=>document.getElementById(id);
 const W=1024,H=1536;
 const NODES=[[393,1370,116,60],[571,1272,114,59],[647,1133,110,57],[487,1007,107,56],[578,884,104,54],[695,788,102,53],[558,647,99,51],[661,511,95,50],[473,432,93,48],[574,290,90,47]];
-const CARDS=[
- ['Хлеб','нан','🍞','Сәлеметсіз бе! · Рақмет!','img/bread.png'],
- ['Молоко и кефир','сүт · айран','🥛','…бар ма? — есть?'],
- ['Масло и сметана','май · қаймақ','🧈','иә / жоқ — да / нет'],
- ['Яйца','жұмыртқа','🥚','бір, екі, үш… — счёт'],
- ['Сыр и курт','ірімшік · құрт','🧀','Қанша тұрады? — сколько стоит?'],
- ['Чай и сахар','шай · қант','🍵','Маған … беріңізші — дайте мне'],
- ['Фрукты','алма · банан','🍎','үлкен / кіші — большой / маленький'],
- ['Вода и сок','су · шырын','🧃','Кешіріңіз — извините'],
- ['Полная корзина','всё вместе','🧺','Барлығы қанша? — сколько всего?'],
- ['Разговор с Апой','повторение','⭐','весь диалог без подсказок']];
-const TITLES=CARDS.map(c=>c[0]);
+const TOPICS=[["Магазин у дома", "🏪", [["Хлеб", "🍞", "img/bread.png"], ["Молоко и кефир", "🥛"], ["Масло и сметана", "🧈"], ["Яйца", "🥚"], ["Сыр и курт", "🧀"], ["Чай и сахар", "🍵"], ["Фрукты", "🍎"], ["Вода и сок", "🧃"], ["Полная корзина", "🧺"]]], ["Двор и соседи", "🏡", [["Знакомство", "👋"], ["Как дела?", "😊"], ["Откуда ты?", "🗺️"], ["Сколько лет?", "🎂"], ["Мой дом", "🏠"], ["Двор", "🌳"], ["Цвета", "🎨"], ["Кто это? Что это?", "❓"], ["Вежливые слова", "🙏"]]], ["Семья", "👨‍👩‍👧", [["Мама и папа", "👪"], ["Братья и сёстры", "👫"], ["Бабушка и дедушка", "👵"], ["У меня есть…", "🤲"], ["Возраст", "🔢"], ["Профессии", "💼"], ["Характер", "😇"], ["Семейное фото", "📷"], ["Семейный ужин", "🍲"]]], ["Мой дом", "🛋️", [["Комнаты", "🛏️"], ["Мебель", "🪑"], ["Где лежит?", "📦"], ["Уборка", "🧹"], ["Утро", "☀️"], ["Кухня", "🍳"], ["Чай по-казахски", "🫖"], ["Где мои вещи?", "🔑"], ["Гости пришли", "🚪"]]], ["Базар", "🧺", [["На базаре", "🛒"], ["Овощи", "🥕"], ["Фрукты и ягоды", "🍇"], ["Вес", "⚖️"], ["Числа до 1000", "💯"], ["Торгуемся", "🤝"], ["Мясо и молочное", "🥩"], ["Сладости", "🍬"], ["Сумка тяжёлая!", "🛍️"]]], ["Кафе", "☕", [["Пришли в кафе", "🍽️"], ["Делаем заказ", "📝"], ["Напитки", "🥤"], ["Горячее", "🍜"], ["Десерт", "🍰"], ["Нравится?", "👍"], ["Счёт", "🧾"], ["С собой", "🥡"], ["День рождения", "🎉"]]], ["Парк и погода", "🌤️", [["Какая погода?", "🌤️"], ["Тепло и холодно", "🌡️"], ["Времена года", "🍂"], ["Зонт и куртка", "☂️"], ["Игры в парке", "⚽"], ["Животные", "🐶"], ["Дни недели", "📅"], ["Пикник", "🧺"], ["Фото на память", "📸"]]], ["Школа", "🏫", [["Первый день", "🏫"], ["Школьные вещи", "✏️"], ["Предметы", "📚"], ["Вчера и завтра", "📆"], ["Который час?", "⏰"], ["Перемена", "🔔"], ["Я умею", "💪"], ["Домашнее задание", "📓"], ["Контрольная", "📝"]]], ["Транспорт", "🚌", [["На остановке", "🚏"], ["Такси", "🚕"], ["Направо, налево", "↔️"], ["Далеко и близко", "📍"], ["Сколько ехать?", "⏱️"], ["На велосипеде", "🚲"], ["Правила дороги", "🚦"], ["Я опаздываю!", "🏃"], ["Забыл сумку", "🎒"]]], ["Прогулка", "🗺️", [["Где находится?", "🧭"], ["Здания", "🏦"], ["Адрес", "🏠"], ["Карта", "🗺️"], ["Музей", "🏛️"], ["Кино", "🎬"], ["Библиотека", "📖"], ["Торговый центр", "🛍️"], ["Вечерняя прогулка", "🌃"]]]];
+const PER=10;
 const LESSON_URL={1:'lesson.html'};
 let done=0, pts=0, chestOpened=false; try{ done=+localStorage.getItem('almaMapDone')||0; pts=+localStorage.getItem('almaPts')||0; chestOpened=localStorage.getItem('almaChest1')==='1'; }catch(e){}
 function save(){ try{ localStorage.setItem('almaMapDone',done); localStorage.setItem('almaPts',pts); localStorage.setItem('almaChest1',chestOpened?'1':'0'); }catch(e){} }
@@ -144,30 +134,33 @@ function render(){
   NODES.forEach(([x,y,w,h],i)=>{
     const n=i+1, b=document.createElement('button'); b.className='node abs';
     b.style.left=(x/W*100)+'%'; b.style.top=(y/H*100)+'%'; b.style.width=(w*1.04/W*100)+'%'; b.style.height=(h*1.08/H*100)+'%'; b.style.fontSize=(w/W*100*0.5)+'cqw';
-    const st= n<=done?'done': n===done+1?'cur':'locked'; b.classList.add(st); 
-    b.innerHTML='<div class="tint"></div><div class="num">'+(st==='locked'?'🔒':n)+'</div>'+(st==='cur'?'<img class="flag" src="img/flag.png" alt="">':'');
+    const st=topicState(n); b.classList.add(st); 
+    b.innerHTML='<div class="tint"></div><div class="num">'+(st==='locked'?'🔒':TOPICS[n-1][1])+'</div>'+(st==='cur'?'<img class="flag" src="img/flag.png" alt="">':'');
     b.onclick=()=>{ ac();
       tone(660); openStart(n); };
     $('map').appendChild(b);
   });
-  const ch=$('chestHit'); ch.className='abs '+(chestOpened?'':done>=10?'ready':''); $('ptsN').textContent=pts;
+  const ch=$('chestHit'); ch.className='abs '+(chestOpened?'':done>=100?'ready':''); $('ptsN').textContent=pts;
 }
-function cardState(n){ return n<=done?'done': n===done+1?'cur':'locked'; }
-function startLesson(n){ tone(880); $('deckBox').classList.remove('on'); if(n===1) intro(); else if(LESSON_URL[n]) location.href=LESSON_URL[n]; else toast('Урок '+n+' скоро появится ✨'); }
-function openStart(n){
-  const G=$('grid'); G.innerHTML='';
-  CARDS.forEach((c,i)=>{ const k=i+1, st=cardState(k), d=document.createElement('div');
-    d.className='blk '+st+(k===10?' last':'');
-    d.innerHTML='<div class="ph">'+(c[4]?'<img src="'+c[4]+'" alt="">':'<span>'+c[2]+'</span>')+'</div><b>Урок '+k+'</b>';
-    d.onclick=()=>{ ac(); if(st==='locked'){ tone(250,.1,'square',.05); toast('Сначала пройди урок '+(done+1)+' 🙂'); return; } startLesson(k); };
-    G.appendChild(d); });
+function topicState(t){ return done>=t*PER?'done': done>=(t-1)*PER?'cur':'locked'; }
+function lessonState(t,k){ const g=(t-1)*PER+k; return g<=done?'done': g===done+1?'cur':'locked'; }
+function startLesson(t,k){ tone(880); $('deckBox').classList.remove('on'); if(t===1&&k===1) intro(); else toast((k===10?'Тест':'Урок '+k)+' скоро появится ✨'); }
+function openStart(t){
+  const T=TOPICS[t-1], G=$('grid'); G.innerHTML='';
+  $('gHead').querySelector('b').textContent='Тема '+t+' · '+T[0];
+  for(let k=1;k<=10;k++){ const st=lessonState(t,k), d=document.createElement('div'), L=T[2][k-1];
+    d.className='blk '+st+(k===10?' test':'');
+    if(k===10) d.innerHTML='<div class="ph"><span>⭐</span></div><div class="tx"><b>Тест</b><small>проверь себя</small></div>';
+    else d.innerHTML='<div class="ph">'+(L[2]?'<img src="'+L[2]+'" alt="">':'<span>'+L[1]+'</span>')+'</div><b>Урок '+k+'</b>';
+    d.onclick=()=>{ ac(); if(st==='locked'){ tone(250,.1,'square',.05); toast('Сначала пройди предыдущие уроки 🙂'); return; } startLesson(t,k); };
+    G.appendChild(d); }
   $('deckBox').classList.add('on');
 }
 $('deckClose').onclick=()=>{ tone(500,.05); $('deckBox').classList.remove('on'); };
 $('deckBox').addEventListener('click',e=>{ if(e.target.id==='deckBox') $('deckBox').classList.remove('on'); });
 $('chestHit').onclick=async()=>{ ac();
   if(chestOpened){ toast('Сундук уже открыт 🙂'); return; }
-  if(done<10){ tone(200,.15,'square',.05); toast('Сундук откроется после 10 уроков 🔒'); return; }
+  if(done<100){ tone(200,.15,'square',.05); toast('Сундук откроется, когда пройдёшь все 10 тем 🔒'); return; }
   chestOpened=true; $('chestHit').className='abs'; [523,659,784,1047].forEach((f,i)=>tone(f,.2,'triangle',.12,i*.1));
   const r=$('chestHit').getBoundingClientRect(), m=$('map').getBoundingClientRect(), p=$('pts').getBoundingClientRect();
   const f=document.createElement('div'); f.className='fly'; f.textContent='+50 ⭐'; f.style.left=(r.left-m.left)+'px'; f.style.top=(r.top-m.top)+'px'; $('map').appendChild(f);
@@ -199,7 +192,7 @@ async function intro(){
   location.href='lesson.html';
 }
 if((()=>{try{return localStorage.getItem('almaJustDone')==='1'}catch(e){return false}})()){ try{localStorage.removeItem('almaJustDone')}catch(e){}; setTimeout(()=>toast('Урок 1 пройден! Следующий — урок 2 🎉'),400); }
-$('demo').onclick=()=>{ ac(); done=(done+1)%11; if(done===0){chestOpened=false;pts=0;} save(); tone(880); render(); };
+$('demo').onclick=()=>{ ac(); done=(done+1)%101; if(done===0){chestOpened=false;pts=0;} save(); tone(880); render(); };
 const IA=createRig($('ia'),'puppet/'); render(); window.toast=toast; mountNav($('app'),'map','');
 </script>
 </body>
