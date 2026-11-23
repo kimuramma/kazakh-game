@@ -144,7 +144,7 @@ function render(){
 }
 function topicState(t){ return done>=t*PER?'done': done>=(t-1)*PER?'cur':'locked'; }
 function lessonState(t,k){ const g=(t-1)*PER+k; return g<=done?'done': g===done+1?'cur':'locked'; }
-function startLesson(t,k){ tone(880); $('deckBox').classList.remove('on'); if(t===1&&k===1) intro(); else if(t===1&&k===2){ setTimeout(()=>location.href='lesson2.html',250); } else toast((k===10?'Тест':'Урок '+k)+' скоро появится ✨'); }
+function startLesson(t,k){ tone(880); $('deckBox').classList.remove('on'); if(t===1&&k===1) intro(); else if(t===1&&k===2){ setTimeout(()=>location.href='lesson2.html',250); } else if(t===1){ setTimeout(()=>location.href='shop.html?l='+k,250); } else toast((k===10?'Тест':'Урок '+k)+' скоро появится ✨'); }
 function openStart(t){
   const T=TOPICS[t-1], G=$('grid'); G.innerHTML='';
   $('gHead').querySelector('b').textContent='Тема '+t+' · '+T[0];
@@ -191,7 +191,7 @@ async function intro(){
   await wait(650); $('whiteout').style.opacity=1; await wait(450);
   location.href='lesson.html';
 }
-if((()=>{try{return localStorage.getItem('almaJustDone')==='1'}catch(e){return false}})()){ try{localStorage.removeItem('almaJustDone')}catch(e){}; setTimeout(()=>toast('Урок 1 пройден! Следующий — урок 2 🎉'),400); }
+if((()=>{try{return localStorage.getItem('almaJustDone')==='1'}catch(e){return false}})()){ try{localStorage.removeItem('almaJustDone')}catch(e){}; setTimeout(()=>toast(done>=10?'Тема пройдена! Сундук ждёт 🎁':(done%10===9?'Урок '+done+' пройден! Дальше — тест ⭐':'Урок '+done+' пройден! Дальше — урок '+(done+1)+' 🎉')),400); }
 $('demo').onclick=()=>{ ac(); done=(done+1)%101; if(done===0){chestOpened=false;pts=0;} save(); tone(880); render(); };
 const IA=createRig($('ia'),'puppet/'); render(); window.toast=toast; mountNav($('app'),'map','');
 </script>
