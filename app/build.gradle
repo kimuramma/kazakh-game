@@ -6,8 +6,15 @@ android {
         applicationId 'kz.sheby.kazakhgame'
         minSdk 24
         targetSdk 34
-        versionCode 1
-        versionName '0.1'
+        versionCode ((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
+        versionName '0.' + (System.getenv('GITHUB_RUN_NUMBER') ?: '1')
+    }
+    signingConfigs {
+        dev { storeFile file('alma-dev.jks'); storePassword 'almadev123'; keyAlias 'alma'; keyPassword 'almadev123' }
+    }
+    buildTypes {
+        debug { signingConfig signingConfigs.dev }
+        release { signingConfig signingConfigs.dev }
     }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
     aaptOptions { noCompress 'otf' }
