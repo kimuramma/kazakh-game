@@ -132,7 +132,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0;
 .listenBtn{width:100%;flex:none;min-height:14cqw;font-size:6cqw;background:linear-gradient(#bfe6ff,#69b8f2);border-color:#2b6fa8;box-shadow:0 1.2cqw 0 #1f4f7a;color:#0d2f4d}
 .hintline{font-size:3.8cqw;color:#8a5a2e;font-weight:800}
 /* items on the counter (in visible area) */
-#counter{position:absolute;left:0;right:0;top:0;height:46%;z-index:6;pointer-events:none}
+#counter{position:absolute;left:0;right:0;top:0;height:46%;z-index:4;pointer-events:none}
 .ci{position:absolute;bottom:0;transform:translateX(-50%);pointer-events:auto;cursor:pointer;transition:transform .25s,filter .25s,opacity .3s;filter:drop-shadow(0 .8cqw .6cqw rgba(60,30,10,.35))}
 .ci img{height:100%;display:block}
 .ci.glow,.prod.glow{filter:drop-shadow(0 0 1.4cqw #fff36b) drop-shadow(0 0 2.8cqw #ffb92e);animation:pwig 1s ease-in-out infinite}
@@ -180,13 +180,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;padding:0;
     <div id="fr" class="abs" style="display:none"><img src="img/p/fridge.png" alt=""></div>
     <div id="tagBox" class="abs" style="left:calc(var(--vl,0%) + 37%);top:45%;opacity:0;transition:opacity .3s,transform .3s"><img id="tag" src="img/tag.png" alt="ценник"><span id="tagTxt">?</span></div>
   </div>
+  <div id="counter"></div>
   <div id="almaBox" class="abs"><div id="alma"></div></div>
   <div id="apaSay" class="abs bubble"></div>
   <div id="almaSay" class="abs bubble"></div>
 
 
 </div>
-  <div id="counter"></div>
   <div id="basket"><img src="img/p/basket.png" alt=""><span id="bcount">0</span></div>
   <div id="bar" class="abs"><div id="barfill"></div></div>
   <button id="dictBtn" class="abs" aria-label="Словарь">📖</button>

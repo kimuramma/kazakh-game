@@ -20,8 +20,8 @@ function hideFridge(){ $('fz').classList.remove('on'); }
 async function openDoor(){ if($('door').classList.contains('open')) return; $('q').innerHTML='Открой дверцу холодильника 👆'; clearPanel(); panel(true); await doorOpen(); }
 /* ---- counter: items stand on the counter top (visible-area %) ---- */
 function showCounter(ids){ CO=ids; const box=$('counter'); box.innerHTML=''; calcVL();
-  const n=ids.length, x0=44, x1=93; ids.forEach((id,i)=>{ const d=document.createElement('div'); d.className='ci'; d.id='c_'+id;
-    d.style.left=(n===1?(x0+x1)/2:x0+(x1-x0)*i/(n-1))+'%'; d.style.height=(19*CAT[id].s)+'%'; d.innerHTML=`<img src="${CAT[id].src}" alt="">`; box.appendChild(d); }); }
+  const n=ids.length, x0=52, x1=93; ids.forEach((id,i)=>{ const d=document.createElement('div'); d.className='ci'; d.id='c_'+id;
+    const f=(n===1?(x0+x1)/2:x0+(x1-x0)*i/(n-1))/100; d.style.left=`calc(var(--vl,0%) + (100% - 2*var(--vl,0%))*${f.toFixed(3)})`; d.style.height=(19*CAT[id].s)+'%'; d.innerHTML=`<img src="${CAT[id].src}" alt="">`; box.appendChild(d); }); }
 function hideCounter(){ $('counter').innerHTML=''; CO=[]; }
 function el(id){ return $('p_'+id)||$('c_'+id); }
 /* ---- learn by tapping the glowing product ---- */
@@ -62,7 +62,7 @@ async function step(){ panel(false); hush(); progress(); await sleep(250); }
 const L={};
 L[1]={title:'Хлеб',steps:8, words:[['Сәлем!','Привет!'],['Сәлеметсіз бе!','Здравствуйте! (старшему)'],['Нан','Хлеб'],['Бар','Есть (имеется)'],['Нан бар ма?','Хлеб есть?'],['Қанша тұрады?','Сколько стоит?'],['Екі жүз теңге','Двести тенге'],['Рақмет!','Спасибо!']],
  async run(){ showCounter(['bread','orange','tea']);
-  await line('alma','Ура, лавка Апы! Мама просила купить хлеб 🍞');
+  await line('alma','Ой, животик урчит… 😋 Хочу свежего хлеба! Зайду в лавку Апы 🍞');
   await line('apa',K([['Сәлем,','привет,'],['Алма!','Алма!']])+' 😊','Сәлем, Алма!');
   await card([['Сәлем!','Привет! (другу, младшему)'],['Сәлеметсіз бе!','Здравствуйте! (старшему)']],'Апа старше — ей говорим «Сәлеметсіз бе!»');
   await ask('Поздоровайся с Апой вежливо:',[{t:'Сәлем!',react:'Так здороваются с друзьями. Апа старше 🙏'},{t:'Сәлеметсіз бе!',ok:true},{t:'Рақмет!',react:'Это «спасибо» 😉'}]);
